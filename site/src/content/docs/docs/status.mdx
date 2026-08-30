@@ -1,0 +1,32 @@
+---
+title: Status
+description: Canon v0.1.0 — what ships, how to run CI, Docker pin.
+---
+
+v0.1.0. Always-on law as git markdown. Example law: **Northwind Coffee** (fictional). MIT.
+
+Git is the source of truth. CI is the lock. Optional MCP is a projection. Herdr is a multiplexer, not a brain.
+
+## Local CI
+
+```bash
+bash scripts/check-law.sh
+cd mcp && python -m pytest tests
+```
+
+`check-law.sh` caps `AGENTS.md` (80 lines / 12 KB), greps the three hard-rule needles, checks ADR frontmatter, rejects secret patterns, requires CODEOWNERS, asserts fail-closed MCP, and fails on forbidden product-name tokens.
+
+GitHub Actions: law-check, secret-scan, agent-security, mcp-test. Tag `v*` publishes GHCR. Push to `main` publishes this site.
+
+## Docker
+
+Pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+
+```bash
+export CANON_MCP_TOKEN=          # required; do not commit
+docker compose up -d
+```
+
+See [MCP / Portainer](./mcp/).
+
+Canonical long form: [`docs/STATUS.md`](https://github.com/mattstyles333/canon/blob/main/docs/STATUS.md).

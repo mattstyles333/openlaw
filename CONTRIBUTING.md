@@ -2,7 +2,10 @@
 
 This repository is **law**, not a memory product and not an agent
 runtime. Contributions should make the law files, the CI that enforces
-them, or the docs that attach them to existing harnesses better.
+them, the harness examples, or the site/docs better.
+
+Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/).
+Onboarding: [docs/onboarding](https://mattstyles333.github.io/canon/docs/onboarding/).
 
 ## Fork, then replace example law
 

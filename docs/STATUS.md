@@ -1,8 +1,10 @@
 # Canon v0.1 status
 
 Always-on law for AI agents, stored as git markdown, never retrieved.
-This is law, not memory SaaS. The example company in the template is
+This is law, not memory. The example company in the template is
 **Northwind Coffee** (fictional). Replace `law/` on fork.
+
+Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/).
 
 Git is the source of truth. CI is the agent security layer. Optional MCP
 is a projection of git. Herdr is a multiplexer, not a brain.

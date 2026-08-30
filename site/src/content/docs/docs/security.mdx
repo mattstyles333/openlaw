@@ -1,0 +1,33 @@
+---
+title: Security
+description: CI is the agent security layer. MCP fails closed. No secrets in git.
+---
+
+Owner writes law in git. Specialists propose decisions. CI is the agent security layer. Secrets never enter the repo. MCP, when present, fails closed.
+
+## Roles
+
+| Role | May | May not |
+| --- | --- | --- |
+| Owner (`CODEOWNERS`) | Merge `law/`, `AGENTS.md`, decided ADRs | Put secrets in git |
+| Specialist | Propose `decisions/*.md` (`status: proposed`) | Edit `law/constraints.md` without review; invent policy |
+| CI | Reject oversized `AGENTS.md`, missing needles, secret patterns, fail-open MCP | Decide policy |
+| MCP | Project current git files; insert proposed ADRs | Be the source of truth; run SQL; skip bearer |
+
+## The lock
+
+Language-model instructions are not a control. Agents rewrite policy if you let them.
+
+- `AGENTS.md`: max 80 lines / 12 KB
+- Hard-rule needles in `scripts/check-law.sh`
+- ADR frontmatter on `decisions/20*.md`
+- Secret patterns rejected in `law/` and `AGENTS.md`
+- `CODEOWNERS` covers `law/` and `AGENTS.md`
+- MCP: bearer required; missing `CANON_MCP_TOKEN` refuses to listen; HTTP 401 without bearer; no SQL tool
+- Gitleaks on push and pull request
+
+**NEVER** put tokens, customer PII, or live credentials in `law/` or git. `CANON_MCP_TOKEN` is an environment variable / Portainer stack env. Names are not values.
+
+Report vulnerabilities via GitHub private vulnerability reporting. See [`SECURITY.md`](https://github.com/mattstyles333/canon/blob/main/SECURITY.md).
+
+Canonical long form: [`docs/SECURITY-MODEL.md`](https://github.com/mattstyles333/canon/blob/main/docs/SECURITY-MODEL.md).

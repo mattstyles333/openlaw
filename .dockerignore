@@ -17,5 +17,6 @@ mcp/build
 docs
 examples
 scripts
+site
 compose.dev.yml
 *.pyc

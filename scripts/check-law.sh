@@ -244,15 +244,15 @@ else
   echo "note: mcp/server.py absent; skipping MCP auth gates (projection is optional)"
 fi
 
-# 9. Rename leftovers (needles live in this script; exclude it from the scan)
-#    Clone directory name is not searched. Phrase "always-on law" is allowed.
-leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude=check-law.sh \
-  'AlwaysLaw|alwayslaw|LAW_MCP' . 2>/dev/null || true)
+# 9. Forbidden product-name tokens (needles live in this script; exclude it).
+#    Phrase "always-on law" is allowed. Hyphenated token always-law is not.
+leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh \
+  'AlwaysLaw|alwayslaw|LAW_MCP|always-law' . 2>/dev/null || true)
 if [[ -n "$leftover_hits" ]]; then
   echo "$leftover_hits" >&2
-  fail "rename leftover (old product name or LAW_MCP*) in public tree"
+  fail "forbidden product-name token in public tree"
 else
-  ok "no rename leftovers in public tree"
+  ok "no forbidden product-name tokens in public tree"
 fi
 
 echo

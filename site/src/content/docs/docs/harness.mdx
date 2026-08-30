@@ -1,0 +1,32 @@
+---
+title: Harness attach
+description: How existing harnesses load Canon law. MCP is optional HTTP.
+---
+
+Canon is not a runtime. Law loads as markdown your harness already reads. Optional MCP is the same HTTP projection for agents that cannot see the working tree.
+
+Git is the source of truth. MCP is a projection. Herdr is a multiplexer, not a brain.
+
+## Matrix
+
+| Harness | How law loads | Optional MCP |
+| --- | --- | --- |
+| **Grok Build** | Auto-loads `AGENTS.md` | `grok mcp add --transport http` + bearer |
+| **Cursor Grok Bot** | Clone into `/workspace`; `.cursor/rules/law.mdc` | Account-wide HTTP. Public HTTPS, not tailnet, not stdio, not localhost |
+| **Herdr** | Pane `cwd` is the repo; `grok --resume` | Same HTTP MCP if the pane cannot see git |
+| **OpenCode** | `AGENTS.md` | Remote HTTP, `oauth: false`, bearer |
+| **Claude Code** | `CLAUDE.md` → `AGENTS.md` | Same HTTP MCP + bearer |
+| **Gemini CLI** | `GEMINI.md` → `AGENTS.md` | Same HTTP MCP + bearer |
+| **Hermes** | Short `SOUL.md` excerpt (`scripts/excerpt-soul.sh`) | Same MCP. Leave `memory.provider` unset. Do not use `MEMORY.md` as law |
+
+Worked recipes live in `examples/` in the repo.
+
+## Rules for every harness
+
+1. Prefer the working tree. If the agent can read `AGENTS.md` and `law/`, skip MCP.
+2. MCP is HTTP + bearer, fail closed. Cloud agents need public HTTPS.
+3. Do not attach a generic database MCP and call it law. No SQL tool.
+4. Do not index `law/` into a vector store. Retrieved-when-similar is not law.
+5. CI stays on. An attach that lets an agent merge unsigned `law/` is not attached.
+
+Canonical long form: [`docs/HARNESS.md`](https://github.com/mattstyles333/canon/blob/main/docs/HARNESS.md).

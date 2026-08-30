@@ -1,0 +1,89 @@
+---
+const base = import.meta.env.BASE_URL;
+const docs = `${base}docs/`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canon — always-on law</title>
+    <meta
+      name="description"
+      content="Always-on law for AI agents. Git markdown. Never retrieved. Law, not memory."
+    />
+    <link rel="icon" href={`${base}canon-mark.png`} type="image/png" />
+    <meta property="og:title" content="Canon" />
+    <meta
+      property="og:description"
+      content="Always-on law for AI agents. Git markdown. Never retrieved."
+    />
+    <meta
+      property="og:image"
+      content="https://mattstyles333.github.io/canon/canon-og.png"
+    />
+    <style is:global>
+      @import "../styles/canon.css";
+    </style>
+  </head>
+  <body class="hero-page">
+    <div class="hero-wrap">
+      <nav class="hero-nav">
+        <a class="mark" href={base}>Canon</a>
+        <span>
+          <a href={docs}>Docs</a>
+          &nbsp;·&nbsp;
+          <a href={`${docs}onboarding/`}>Onboarding</a>
+          &nbsp;·&nbsp;
+          <a href="https://github.com/mattstyles333/canon">GitHub</a>
+        </span>
+      </nav>
+
+      <section class="hero-stage">
+        <div>
+          <p class="kicker">Law, not memory</p>
+          <h1>Always-on.</h1>
+          <p class="lede">
+            Law for AI agents, stored as git markdown, never retrieved. Fork
+            the repo. Replace <code>law/</code>. CI is the lock. MCP is an
+            optional projection of git — not a brain.
+          </p>
+          <div class="cta-row">
+            <a class="cta" href={`${docs}onboarding/`}>Onboarding</a>
+            <a class="cta ghost" href={docs}>Read the docs</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img src={`${base}canon-hero.png`} alt="Canon" />
+        </div>
+      </section>
+
+      <section class="rules">
+        <div>
+          <h2>Not retrieval</h2>
+          <p>
+            Similarity search is not a constraint. Always-on law loads every
+            session. If it is not in git, it is not policy.
+          </p>
+        </div>
+        <div>
+          <h2>Fork, then replace</h2>
+          <p>
+            Northwind Coffee is a teaching example. Your organisation’s law
+            lives in <code>law/</code>. Keep <code>AGENTS.md</code> under 80
+            lines.
+          </p>
+        </div>
+        <div>
+          <h2>CI is the lock</h2>
+          <p>
+            Agents rewrite policy if you let them. <code>check-law.sh</code>
+            and GitHub Actions are the security layer. Not a prompt.
+          </p>
+        </div>
+      </section>
+
+      <p class="foot">MIT · v0.1.0 · Northwind is fictional</p>
+    </div>
+  </body>
+</html>

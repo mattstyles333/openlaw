@@ -1,0 +1,47 @@
+---
+title: MCP / Portainer
+description: Optional HTTP projection. GHCR pin 0.1.0. Fail-closed bearer. No postgres.
+---
+
+Optional thin HTTP MCP. **Git is the source of truth. MCP is not.** Agents that can see `AGENTS.md` and `law/` should read the files.
+
+`get_law` returns the current files concatenated. It does not search.
+
+## Image pin
+
+`ghcr.io/mattstyles333/canon-mcp:0.1.0` — semver, no `v` prefix.
+
+Git tag `v0.1.0` publishes that image. An extra `:v0.1.0` tag may exist. **Compose and Portainer pin `:0.1.0`.**
+
+```bash
+docker pull ghcr.io/mattstyles333/canon-mcp:0.1.0
+export CANON_MCP_TOKEN=          # required; never commit
+docker compose up -d             # port 8787
+```
+
+## Portainer
+
+1. New stack named `canon-mcp`.
+2. Paste repo-root `docker-compose.yml`.
+3. Set `CANON_MCP_TOKEN` in the stack environment UI.
+4. Do not paste the token into the committed file.
+
+Fail closed: missing token → compose interpolation error / process refuses to listen. Missing bearer → HTTP 401. No postgres service. No port 5432. No bind-mount of the clone. No `pip install` at start.
+
+Optional `CANON_COMMIT_TOKEN` for owner tools. Unset → owner tools fail closed.
+
+## Auth
+
+```
+Authorization: Bearer <CANON_MCP_TOKEN>
+```
+
+Cloud agents need **public HTTPS**. Not tailnet-only, not stdio, not localhost.
+
+There is no SQL tool. Postgres is reserved and unimplemented.
+
+Developer bind-mount: `compose.dev.yml` — not the Portainer stack.
+
+Local pip path: `cd mcp && pip install -e ".[dev]"`.
+
+Repo: [`mcp/README.md`](https://github.com/mattstyles333/canon/blob/main/mcp/README.md).

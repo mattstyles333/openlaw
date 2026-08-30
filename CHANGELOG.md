@@ -20,3 +20,6 @@ markdown, never retrieved. This is law, not memory SaaS. Example law is
   `v` prefix). Git tag `v0.1.0` publishes it; compose pins `:0.1.0`.
 - Portainer-ready `docker-compose.yml`: that GHCR pin, port 8787 only,
   no bind-mount, no `pip install` at start, no postgres service.
+- Website: Astro + Starlight on GitHub Pages at
+  `https://mattstyles333.github.io/canon/` (Home, Why, Onboarding,
+  Harness, Security, MCP/Portainer, Status).

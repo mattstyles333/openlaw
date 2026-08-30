@@ -1,0 +1,78 @@
+---
+title: Onboarding
+description: Fork Canon, replace law/, turn on CI, optionally attach MCP and a harness.
+---
+
+Canon is a developer product. You already run Cursor, Claude Code, Grok Build, Hermes, or OpenCode. This is the attach.
+
+## 1. Clone or fork
+
+```bash
+git clone https://github.com/mattstyles333/canon.git
+cd canon
+```
+
+Fork if this will hold *your* organisation’s law. Keep the template MIT.
+
+## 2. Replace `law/`
+
+The tree ships **Northwind Coffee** (fictional, teaching). Replace:
+
+- `law/constraints.md`
+- `law/brand.md`
+- `law/sor.md`
+- `law/priorities.md` (rewrite weekly; do not append forever)
+
+Do not invent policy in chat. If it is not in `law/`, it is not policy.
+
+## 3. Inline three hard rules in `AGENTS.md`
+
+`AGENTS.md` is always-injected. **Max 80 lines / 12 KB.** CI fails if it grows.
+
+Keep the pattern; replace the strings with yours, and replace the grep needles in `scripts/check-law.sh` to match:
+
+- MUST never invent company policy
+- always-on law is git markdown, never a vector store
+- MUST propose decisions; do not edit law/constraints.md without review
+
+`CLAUDE.md`, `GEMINI.md`, and `.cursor/rules/law.mdc` stay one-line pointers.
+
+## 4. Turn on CI
+
+```bash
+bash scripts/check-law.sh
+```
+
+Enable GitHub Actions (or GitLab CI) on the fork. Gates: law-check, secret-scan, agent-security, mcp-test. That is the lock.
+
+Specialists propose `decisions/*.md` with `status: proposed`. Owners listed in `CODEOWNERS` merge decided law.
+
+## 5. Optional MCP (fail closed)
+
+Only if a cloud agent cannot see the working tree.
+
+- Token: `CANON_MCP_TOKEN`. **Never commit it.** Unset token → refuse to listen. Missing bearer → HTTP 401.
+- Pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0`
+
+```bash
+export CANON_MCP_TOKEN=          # set in the shell / Portainer UI; not in git
+docker compose up -d
+```
+
+Portainer: new stack `canon-mcp`, paste `docker-compose.yml`, set `CANON_MCP_TOKEN` in the stack env UI. Port 8787 only. No postgres service.
+
+## 6. Attach one harness
+
+Pick the tool you already use. Prefer the working tree over MCP.
+
+| Harness | Law loads | Optional MCP |
+| --- | --- | --- |
+| Grok Build | `AGENTS.md` | `grok mcp add --transport http` |
+| Cursor Grok Bot | clone into `/workspace` | account-wide HTTP, public HTTPS |
+| Herdr | pane cwd = repo | multiplexer, not a brain |
+| OpenCode | `AGENTS.md` | remote HTTP, oauth false, bearer |
+| Claude Code | `CLAUDE.md` → `AGENTS.md` | same HTTP MCP |
+| Gemini CLI | `GEMINI.md` → `AGENTS.md` | same HTTP MCP |
+| Hermes | short `SOUL.md` excerpt | leave `memory.provider` unset |
+
+Full recipes: [Harness attach](./harness/) and `examples/` in the repo.

@@ -41,11 +41,10 @@ this cycle only checks that the optional projection fails closed.
 - Starlette `TestClient` emits a deprecation warning (httpx vs httpx2).
   Tests still hit the shipped ASGI app. Not a fail-open.
 
-## Cycle 2 — 2026-08-30 — law size, secret scan, rename leftovers
+## Cycle 2 — 2026-08-30 — law size, secret scan, product-name tokens
 
-Class: law file budget, credential patterns, and leftover names from
-the previous product name / old MCP token env prefix. Not a re-run of
-cycle 1's auth review.
+Class: law file budget, credential patterns, and product-name
+consistency in the public tree. Not a re-run of cycle 1's auth review.
 
 ### Findings
 
@@ -55,9 +54,8 @@ cycle 1's auth review.
   and `examples/` could have held `ghp_`, `sk-live-`, or `password:`.
 - `.gitleaks.toml` allowlisted env-var *names* with no path filter, which
   could hide `CANON_MCP_TOKEN=<secret>` in an arbitrary file.
-- Nothing in the public tree still used the old product name or the old
-  MCP token env prefix, but CI did not enforce that. Clone directory
-  name is a leftover by design and is not scanned.
+- CI did not fail the tree on stray product-name tokens (needles live
+  only in `scripts/check-law.sh`). Phrase "always-on law" is allowed.
 - Compose already had no `${CANON_MCP_TOKEN:-...}` default; CI did not
   assert that.
 
@@ -66,8 +64,7 @@ cycle 1's auth review.
 - Secret-pattern grep now includes `decisions/` and `examples/`.
 - `check-law.sh` fails if compose defaults `CANON_MCP_TOKEN`.
 - `check-law.sh` greps the tree (excluding `.git`, `.venv`, and itself)
-  for the old product name and the old MCP token env prefix. Phrase
-  "always-on law" is allowed.
+  for forbidden product-name tokens. Phrase "always-on law" is allowed.
 - Gitleaks name allowlist is path-scoped to docs, CI, compose, scripts,
   and the MCP module.
 
@@ -75,7 +72,7 @@ cycle 1's auth review.
 
 - `bash scripts/check-law.sh` — exit 0 (`check-law-cycle2.log`).
 - `pytest tests` in `mcp/` — 7 passed (`mcp-pytest-cycle2.log`).
-- Leftover grep: no hits. Northwind still present in `law/`.
+- Product-name gate: no hits. Northwind still present in `law/`.
 
 ### Still fails
 
@@ -87,8 +84,8 @@ cycle 1's auth review.
 ## Cycle 3 — 2026-08-30 — harness attach examples
 
 Class: how existing harnesses load `AGENTS.md` / `law/` and attach the
-optional MCP. Not auth internals (cycle 1) and not secret/rename gates
-(cycle 2).
+optional MCP. Not auth internals (cycle 1) and not secret or
+product-name gates (cycle 2).
 
 ### Findings
 
@@ -123,5 +120,3 @@ optional MCP. Not auth internals (cycle 1) and not secret/rename gates
 - No dedicated example for every possible fork of OpenCode config keys
   (the OpenCode file already says keys move between releases; invariant
   is remote HTTP + bearer, oauth false).
-- Clone directory name on this host remains the old repo folder name;
-  GitHub name is Canon. Out of scope to rename the folder.

@@ -27,3 +27,5 @@ markdown, never retrieved. This is law, not memory SaaS. Example law is
   3-step onboard. Docs-only attach for Herdr, Grok Build, Cursor Grok
   Bot, Hermes, OpenCode, Portainer, GitHub Actions. Restart from zero:
   `scripts/reset-onboarding.sh`.
+- Copy-paste **install prompts** per harness (README, onboarding, homepage,
+  `llms.txt`). Paste into the agent. Done when `check-law.sh` exits 0.

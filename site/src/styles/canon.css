@@ -159,6 +159,75 @@ body {
   font-size: 0.95rem;
 }
 
+.prompt-block {
+  margin-top: 3rem;
+  border: 1px solid var(--canon-line);
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.prompt-block .kicker {
+  margin-bottom: 0.75rem;
+}
+
+.prompt-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.prompt-toolbar h2 {
+  font-family: var(--canon-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.prompt-block button {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--canon-brass);
+  background: transparent;
+  border: 1px solid var(--canon-brass);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.prompt-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  background: #111112;
+  color: var(--canon-fg);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  border: 1px solid var(--canon-line);
+  white-space: pre-wrap;
+}
+
+.prompt-list {
+  margin-top: 1.25rem;
+}
+
+.prompt-list details {
+  border-top: 1px solid var(--canon-line);
+  padding: 0.7rem 0;
+}
+
+.prompt-list summary {
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--canon-brass);
+}
+
+.prompt-list pre {
+  margin-top: 0.75rem;
+}
+
 .foot {
   margin-top: 4rem;
   padding-top: 1rem;

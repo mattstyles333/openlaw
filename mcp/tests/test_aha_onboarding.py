@@ -139,3 +139,32 @@ def test_reset_onboarding_script_restores_northwind_and_prints_wipes() -> None:
     assert "Hermes" in out
     assert "OpenCode" in out
     assert "memory.provider" in out
+
+
+def test_install_prompts_are_copy_paste_per_harness() -> None:
+    phrase = "Paste this into your coding agent to install Canon as always-on law."
+    readme = README.read_text(encoding="utf-8")
+    llms = LLMS.read_text(encoding="utf-8")
+    onboard = ONBOARD.read_text(encoding="utf-8")
+    home = HOME.read_text(encoding="utf-8")
+    for text in (readme, llms, onboard, home):
+        assert phrase in text
+        assert "You are done when bash scripts/check-law.sh exits 0." in text
+        assert "AGENTS.md" in text
+        assert "CANON_MCP_TOKEN" in text
+        assert "YOUR-PUBLIC-MCP-HOST" in text
+        assert "ghcr.io/mattstyles333/canon-mcp:0.1.0" in text
+    for label in (
+        "Herdr / Grok Build",
+        "Cursor Grok Bot",
+        "Hermes",
+        "OpenCode",
+        "Claude Code",
+        "Gemini CLI",
+    ):
+        assert label in readme
+        assert label in llms
+        assert label in onboard
+        assert label in home
+    assert "data-copy" in home
+    assert LLMS.read_text(encoding="utf-8") == LLMS_PAGES.read_text(encoding="utf-8")

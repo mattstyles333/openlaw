@@ -1,4 +1,4 @@
-# AlwaysLaw
+# Canon
 
 **Always-on law for AI agents, stored as git markdown, never retrieved.**
 
@@ -17,7 +17,7 @@ brain.
 
 ## What this is
 
-AlwaysLaw is three things, in this order:
+Canon is three things, in this order:
 
 1. **Law files** every existing harness already loads — `AGENTS.md`,
    `CLAUDE.md`, `GEMINI.md`, Cursor rules, a Hermes `SOUL.md` excerpt.
@@ -38,10 +38,10 @@ customer, or a real secret.
 
 ## What this is not
 
-| Product | What it does | Why AlwaysLaw is different |
+| Product | What it does | Why Canon is different |
 | --- | --- | --- |
 | Mem0, Hindsight, Graphiti, Letta, ByteRover | Recall / extraction / graph memory | Retrieval is not law |
-| gitagent | A whole agent OS | AlwaysLaw is files + CI + optional MCP |
+| gitagent | A whole agent OS | Canon is files + CI + optional MCP |
 | Generic Postgres MCP | `execute_sql` against a database | Forbidden here. Law is markdown in git |
 
 See [docs/WHY.md](docs/WHY.md).
@@ -49,8 +49,8 @@ See [docs/WHY.md](docs/WHY.md).
 ## Quickstart
 
 ```bash
-git clone https://github.com/mattstyles333/alwayslaw.git
-cd alwayslaw
+git clone https://github.com/mattstyles333/canon.git
+cd canon
 # 1. Fork (or clone your fork).
 # 2. Replace law/ with your organisation's constraints, brand, SoR, priorities.
 # 3. Keep AGENTS.md short. Inline your non-negotiables (the 3 hard-rule pattern).
@@ -104,13 +104,13 @@ projection of `law/` and `decisions/` with bearer auth that **fails closed**
 (no unauthenticated default). Cloud agents need public HTTPS — not
 tailnet-only, not stdio, not localhost.
 
-`LAW_MCP_TOKEN` is required. The process refuses to listen if it is unset.
+`CANON_MCP_TOKEN` is required. The process refuses to listen if it is unset.
 Owner tools (`commit_decision`, `set_priorities`) also need
-`LAW_COMMIT_TOKEN`. There is no `execute_sql`. Postgres is an opt-in
+`CANON_COMMIT_TOKEN`. There is no `execute_sql`. Postgres is an opt-in
 Compose profile and stays off by default.
 
 ```bash
-export LAW_MCP_TOKEN=          # required; no default secret
+export CANON_MCP_TOKEN=          # required; no default secret
 docker compose up mcp          # listens on 8787
 
 cd mcp && python -m pip install -e ".[dev]" && pytest tests
@@ -146,4 +146,4 @@ See [docs/STATUS.md](docs/STATUS.md).
 
 ## License
 
-[MIT](LICENSE) © 2026 AlwaysLaw contributors.
+[MIT](LICENSE) © 2026 Canon contributors.

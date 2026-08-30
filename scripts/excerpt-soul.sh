@@ -5,7 +5,7 @@
 set -euo pipefail
 
 cat <<'EOF'
-# AlwaysLaw (hard rules)
+# Canon (hard rules)
 
 This session is bound by always-on law in git markdown, not by memory.
 

@@ -1,6 +1,6 @@
 # Security model
 
-AlwaysLaw's security model is boring on purpose. Chief/owner writes
+Canon's security model is boring on purpose. Chief/owner writes
 law via git. Specialists propose decisions. CI is the agent security
 layer. Secrets never enter the repo. MCP, when present, fails closed.
 
@@ -33,7 +33,7 @@ The controls are:
    this file and `SECURITY.md` may *name* token variables.
 5. **CODEOWNERS** must cover `law/` and `AGENTS.md`.
 6. **MCP fail-closed**: if `mcp/server.py` exists, it must require
-   bearer / 401 / `LAW_COMMIT_TOKEN` language and must not contain
+   bearer / 401 / `CANON_COMMIT_TOKEN` language and must not contain
    `execute_sql` or default to unauthenticated.
 7. **Gitleaks** (or equivalent) on every push and pull request.
 
@@ -45,8 +45,8 @@ do not delete them to "unblock" an agent.
 Tokens, keys, customer emails, card data, and live credentials do not
 belong in `law/`. MCP tokens are environment variables:
 
-- `LAW_MCP_TOKEN` — required at MCP startup; refuse to listen if unset.
-- `LAW_COMMIT_TOKEN` — owner tools (`commit_decision`, `set_priorities`).
+- `CANON_MCP_TOKEN` — required at MCP startup; refuse to listen if unset.
+- `CANON_COMMIT_TOKEN` — owner tools (`commit_decision`, `set_priorities`).
 
 Public docs may mention those *names*. Values never ship in git, in
 docker-compose defaults, or in example commands with a real secret.
@@ -57,8 +57,8 @@ When `mcp/` is present:
 
 - Every request requires `Authorization: Bearer <token>`. Missing or
   wrong credentials return **401**. There is no unauthenticated default.
-- The process refuses to listen if `LAW_MCP_TOKEN` is unset.
-- Owner tools require `LAW_COMMIT_TOKEN` in addition.
+- The process refuses to listen if `CANON_MCP_TOKEN` is unset.
+- Owner tools require `CANON_COMMIT_TOKEN` in addition.
 - Cloud agents need **public HTTPS**. Tailnet-only, stdio, and
   localhost are not sufficient for an agent that does not share your
   network. Cursor Grok Bot in particular is account-wide HTTP MCP on

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AlwaysLaw local CI — the agent security layer for law files.
+# Canon local CI — the agent security layer for law files.
 #
 # ADOPTERS: replace the three grep needles in NEEDLE_* below with your
 # organisation's non-negotiable hard rules. Use the SAME strings you
@@ -46,13 +46,13 @@ find_root() {
       return 0
     fi
   fi
-  echo "FAIL: cannot find AlwaysLaw repo root (need AGENTS.md + law/)" >&2
+  echo "FAIL: cannot find Canon repo root (need AGENTS.md + law/)" >&2
   exit 1
 }
 
 ROOT="$(find_root)"
 cd "$ROOT"
-echo "AlwaysLaw check-law: $ROOT"
+echo "Canon check-law: $ROOT"
 
 # 1. Required files ----------------------------------------------------
 REQUIRED=(
@@ -204,12 +204,12 @@ if [[ -f mcp/server.py ]]; then
   missing_auth=0
   grep -Eqi 'bearer' mcp/server.py || missing_auth=1
   grep -Eq '401' mcp/server.py || missing_auth=1
-  grep -Eq 'LAW_COMMIT_TOKEN' mcp/server.py || missing_auth=1
+  grep -Eq 'CANON_COMMIT_TOKEN' mcp/server.py || missing_auth=1
   if ! grep -Eqi 'fail closed|fail-closed|refuse to listen|fails closed' mcp/server.py; then
     missing_auth=1
   fi
   if (( missing_auth == 1 )); then
-    fail "mcp/server.py must fail closed (bearer, 401, LAW_COMMIT_TOKEN, fail closed language)"
+    fail "mcp/server.py must fail closed (bearer, 401, CANON_COMMIT_TOKEN, fail closed language)"
   else
     ok "mcp/server.py fail-closed markers present"
   fi

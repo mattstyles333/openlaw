@@ -6,7 +6,7 @@ into, and any MCP it calls must be **public HTTPS**.
 
 ## Law from git
 
-1. Fork AlwaysLaw (or use a product repo that *is* your law fork).
+1. Fork Canon (or use a product repo that *is* your law fork).
 2. Clone that repo into the Bot's `/workspace` (the workspace root
    Cursor gives the agent).
 3. Confirm `AGENTS.md`, `law/`, and `.cursor/rules/law.mdc` are at
@@ -20,13 +20,13 @@ delete `law/`. Retrieval is not law.
 
 If the Bot must read law from a canonical repo it did not clone:
 
-- Run the AlwaysLaw MCP behind **public HTTPS** (a reverse proxy with
+- Run the Canon MCP behind **public HTTPS** (a reverse proxy with
   a real certificate).
 - Add it as **account-wide HTTP MCP** in Cursor. Not stdio. Not
   localhost. Not tailnet-only. The Bot will not reach `127.0.0.1` on
   your machine and will not join your tailnet.
 - Bearer token required. Fail closed. The token is an env var on the
-  server (`LAW_MCP_TOKEN`), never a file in git.
+  server (`CANON_MCP_TOKEN`), never a file in git.
 
 Cloud agents that cannot present a bearer should not get a
 fail-open fallback. They should get 401.

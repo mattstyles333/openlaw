@@ -22,7 +22,7 @@ project; there is no bug bounty.
 
 - "An agent ignored AGENTS.md." That is why CI exists. Teach the
   harness; do not treat a model refusal-to-follow-instructions as a
-  AlwaysLaw CVE.
+  Canon CVE.
 - Secrets you committed to **your fork's** `law/`. Rotate them; this
   template cannot unsay them.
 
@@ -31,12 +31,12 @@ project; there is no bug bounty.
 **NEVER** put secrets, tokens, customer PII, or live credentials in
 `law/`, `AGENTS.md`, `decisions/`, or examples.
 
-- MCP tokens are environment variables (`LAW_MCP_TOKEN`,
-  `LAW_COMMIT_TOKEN`). They are never files in git.
+- MCP tokens are environment variables (`CANON_MCP_TOKEN`,
+  `CANON_COMMIT_TOKEN`). They are never files in git.
 - Customer emails, card data, and roast-log row dumps do not belong in
   this repo. Systems of record stay in the systems named in
   `law/sor.md`.
-- Docs may *name* token variables (`bearer`, `LAW_MCP_TOKEN`) so that
+- Docs may *name* token variables (`bearer`, `CANON_MCP_TOKEN`) so that
   operators know what to set. Names are not values.
 
 `scripts/check-law.sh` rejects common credential patterns in `law/` and

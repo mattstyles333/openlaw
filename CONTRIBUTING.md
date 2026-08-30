@@ -1,4 +1,4 @@
-# Contributing to AlwaysLaw
+# Contributing to Canon
 
 This repository is **law**, not a memory product and not an agent
 runtime. Contributions should make the law files, the CI that enforces
@@ -7,7 +7,7 @@ them, or the docs that attach them to existing harnesses better.
 ## Fork, then replace example law
 
 The `law/` tree is a **Northwind Coffee** template. It is fictional on
-purpose. If you are adopting AlwaysLaw for a real organisation:
+purpose. If you are adopting Canon for a real organisation:
 
 1. Fork the repo.
 2. Replace `law/constraints.md`, `law/brand.md`, `law/sor.md`, and

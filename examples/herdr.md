@@ -2,16 +2,16 @@
 
 Herdr is a **multiplexer, not a brain**. It does not store policy, it
 does not retrieve policy, and it does not outrank `AGENTS.md`. Each
-pane is an agent with a working directory; AlwaysLaw lives in that
+pane is an agent with a working directory; Canon lives in that
 directory.
 
 ## Pane cwd = repo
 
-Start the pane with cwd set to the AlwaysLaw clone (or to the product
+Start the pane with cwd set to the Canon clone (or to the product
 repo that is your law fork):
 
 ```bash
-cd /path/to/alwayslaw   # or your fork
+cd /path/to/canon   # or your fork
 grok --resume           # continue this pane; do not start a second brain
 ```
 

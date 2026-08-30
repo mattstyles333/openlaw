@@ -39,7 +39,7 @@ jobs:
           if [ -f mcp/server.py ]; then
             grep -Eqi 'bearer' mcp/server.py
             grep -Eq '401' mcp/server.py
-            grep -Eq 'LAW_COMMIT_TOKEN|LAW_MCP_TOKEN' mcp/server.py
+            grep -Eq 'CANON_COMMIT_TOKEN|CANON_MCP_TOKEN' mcp/server.py
             grep -Eqi 'fail closed|fail-closed|refuse to listen|fails closed' mcp/server.py
             if grep -Eqi 'unauthenticated default|allow_anonymous|AUTH_DISABLED' mcp/server.py; then
               echo "mcp/server.py must not default to unauthenticated" >&2
@@ -69,7 +69,7 @@ jobs:
           done
           echo "ok: decision frontmatter"
 
-      - name: AlwaysLaw gates
+      - name: Canon gates
         run: bash scripts/check-law.sh
 
       - name: Summarize law/ diff on pull requests
@@ -103,7 +103,7 @@ jobs:
               diff = '(no changes in law/, AGENTS.md, or decisions/)';
             }
             const body = [
-              '### AlwaysLaw — law/ diff',
+              '### Canon — law/ diff',
               '',
               'CI is the agent security layer. Retrieval is not law.',
               '',
@@ -116,7 +116,7 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            const marker = '### AlwaysLaw — law/ diff';
+            const marker = '### Canon — law/ diff';
             const existing = comments.find(c => c.body && c.body.includes(marker));
             if (existing) {
               await github.rest.issues.updateComment({

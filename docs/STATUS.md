@@ -1,4 +1,4 @@
-# AlwaysLaw v0.1 status
+# Canon v0.1 status
 
 Always-on law for AI agents, stored as git markdown, never retrieved.
 This is law, not memory SaaS. The example company in the template is
@@ -25,13 +25,13 @@ their own. GitHub Actions and GitLab CI run law-check, secret-scan
 
 ## MCP smoke
 
-Bearer required. `LAW_MCP_TOKEN` has no default; the server refuses to
+Bearer required. `CANON_MCP_TOKEN` has no default; the server refuses to
 listen if it is unset. Without a bearer, HTTP 401. With a bearer,
 `get_law` includes an example hard rule (`MUST never invent company
 policy` or `always-on`). No live Postgres.
 
 ```bash
-export LAW_MCP_TOKEN=          # required; do not commit a value
+export CANON_MCP_TOKEN=          # required; do not commit a value
 docker compose up mcp          # port 8787
 
 cd mcp

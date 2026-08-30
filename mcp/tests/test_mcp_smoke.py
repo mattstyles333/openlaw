@@ -11,7 +11,7 @@ from starlette.testclient import TestClient
 
 from server import create_app
 
-TOKEN = os.environ["LAW_MCP_TOKEN"]
+TOKEN = os.environ["CANON_MCP_TOKEN"]
 
 
 def test_get_law_with_bearer_includes_hard_rule() -> None:

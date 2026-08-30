@@ -1,11 +1,11 @@
 [project]
-name = "alwayslaw-mcp"
+name = "canon-mcp"
 version = "0.1.0"
-description = "Optional thin HTTP MCP projection of AlwaysLaw git markdown. Not the source of truth."
+description = "Optional thin HTTP MCP projection of Canon git markdown. Not the source of truth."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
-authors = [{ name = "AlwaysLaw contributors" }]
+authors = [{ name = "Canon contributors" }]
 dependencies = [
   "starlette>=0.37,<1.6",
   "uvicorn>=0.30",
@@ -18,7 +18,7 @@ dev = [
 ]
 
 [project.scripts]
-alwayslaw-mcp = "server:main"
+canon-mcp = "server:main"
 
 [build-system]
 requires = ["setuptools>=68"]

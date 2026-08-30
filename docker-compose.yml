@@ -1,9 +1,9 @@
-# AlwaysLaw optional MCP. Git is the source of truth; this is a projection.
+# Canon optional MCP. Git is the source of truth; this is a projection.
 # Default: only the mcp service. Postgres is a profile and stays off.
 #
-# LAW_MCP_TOKEN is required (no fallback secret). The server refuses to
+# CANON_MCP_TOKEN is required (no fallback secret). The server refuses to
 # listen if it is unset:
-#   export LAW_MCP_TOKEN=...
+#   export CANON_MCP_TOKEN=...
 #   docker compose up mcp
 
 services:
@@ -15,9 +15,9 @@ services:
     ports:
       - "8787:8787"
     environment:
-      LAW_MCP_TOKEN: ${LAW_MCP_TOKEN}
-      LAW_COMMIT_TOKEN: ${LAW_COMMIT_TOKEN:-}
-      # LAW_POSTGRES_URL is reserved, off by default, unimplemented in v0.1.
+      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN}
+      CANON_COMMIT_TOKEN: ${CANON_COMMIT_TOKEN:-}
+      # CANON_POSTGRES_URL is reserved, off by default, unimplemented in v0.1.
     command:
       - sh
       - -c
@@ -27,8 +27,8 @@ services:
     profiles: ["postgres"]
     image: postgres:16
     environment:
-      POSTGRES_USER: alwayslaw
-      POSTGRES_DB: alwayslaw
+      POSTGRES_USER: canon
+      POSTGRES_DB: canon
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"

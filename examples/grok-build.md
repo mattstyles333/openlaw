@@ -6,8 +6,8 @@ the attach. You do not need a plugin to have law.
 ## Law from git
 
 ```bash
-git clone https://github.com/YOU/your-alwayslaw-fork.git
-cd your-alwayslaw-fork
+git clone https://github.com/YOU/your-canon-fork.git
+cd your-canon-fork
 # Open this directory as the Grok Build workspace.
 # AGENTS.md is always-on. law/ is pointed at from AGENTS.md.
 bash scripts/check-law.sh
@@ -22,7 +22,7 @@ When the session cannot see a particular canonical clone (or you want
 the same law on a bot that is not this workspace):
 
 ```bash
-# Public HTTPS URL of the AlwaysLaw MCP. Bearer required on the server.
+# Public HTTPS URL of the Canon MCP. Bearer required on the server.
 grok mcp add --transport http https://law.example.invalid
 ```
 

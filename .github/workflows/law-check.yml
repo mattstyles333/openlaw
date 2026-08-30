@@ -12,5 +12,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run AlwaysLaw gates
+      - name: Run Canon gates
         run: bash scripts/check-law.sh

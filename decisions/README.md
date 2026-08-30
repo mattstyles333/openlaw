@@ -1,6 +1,6 @@
 # Decisions (ADRs)
 
-Architecture Decision Records for AlwaysLaw law. This is how policy
+Architecture Decision Records for Canon law. This is how policy
 changes: **propose**, then **owners merge**.
 
 Agents MUST propose decisions. They MUST NOT edit `law/constraints.md`

@@ -1,4 +1,4 @@
-# AlwaysLaw GitLab CI — same gates as .github/workflows/
+# Canon GitLab CI — same gates as .github/workflows/
 # so GitLab adopters get the agent security layer too.
 # mcp-test no-ops when mcp/ is absent.
 
@@ -59,7 +59,7 @@ agent-security:
       if [ -f mcp/server.py ]; then
         grep -Eqi 'bearer' mcp/server.py
         grep -Eq '401' mcp/server.py
-        grep -Eq 'LAW_COMMIT_TOKEN|LAW_MCP_TOKEN' mcp/server.py
+        grep -Eq 'CANON_COMMIT_TOKEN|CANON_MCP_TOKEN' mcp/server.py
         grep -Eqi 'fail closed|fail-closed|refuse to listen|fails closed' mcp/server.py
       fi
     - |

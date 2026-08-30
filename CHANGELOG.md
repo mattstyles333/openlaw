@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.2.0 — 2026-08-31
+
+Minor product drop: ranked harness permissions, the propose → review →
+merge loop, and a build-time ops one-pager. Live Portainer pin stays
+`ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+
+- Ranked harness list in `law/permissions.md`. Rank 1 (Herdr / Grok
+  Build) may merge only via CODEOWNERS / human; rank 2+ propose via PR.
+  Agents never auto-merge `law/` or `AGENTS.md`. `check-law` requires
+  the file, a numbered list, and the CODEOWNERS parent rule.
+- Propose → review → merge: `scripts/propose.sh`, `docs/LEARNING.md`,
+  PR template, `.github/workflows/pr-law-review.yml`. The pull request
+  is the discussion room. Never auto-merge law.
+- Build-time Tailwind ops one-pager at `/ops/`. Generated from git
+  markdown and workflow YAML at `astro build`. No live database, no
+  runtime GitHub fetch.
+
 ## 0.1.0 — 2026-08-30
 
 First public release of Openlaw (display **Openlaw**, repo

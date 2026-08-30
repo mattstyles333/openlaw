@@ -1,4 +1,4 @@
-# Openlaw v0.1 status
+# Openlaw v0.2.0 status
 
 Always-on law for AI agents, stored as git markdown, never retrieved.
 This is law, not memory. The example company in the template is
@@ -42,8 +42,8 @@ pytest tests
 
 ## Run with Docker / Portainer
 
-Live pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0`. Planned name: `ghcr.io/mattstyles333/openlaw-mcp`. Prefer `OPENLAW_MCP_TOKEN`; `CANON_MCP_TOKEN` is a deprecated alias.
-Git tag `v0.1.0` publishes it; compose pins `:0.1.0`. Extra `:v0.1.0`
+Live pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0` (do not delete). Planned name: `ghcr.io/mattstyles333/openlaw-mcp`. Prefer `OPENLAW_MCP_TOKEN`; `CANON_MCP_TOKEN` is a deprecated alias.
+Git tag `v0.2.0` publishes `openlaw-mcp:0.2.0`. Compose still pins the live image `:0.1.0`. Extra `:v0.1.0`
 may exist.
 
 ```bash

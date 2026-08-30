@@ -1,4 +1,4 @@
-# Canon GitLab CI — same gates as .github/workflows/
+# Openlaw GitLab CI — same gates as .github/workflows/
 # so GitLab adopters get the agent security layer too.
 # mcp-test no-ops when mcp/ is absent.
 

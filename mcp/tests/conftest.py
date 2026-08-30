@@ -10,6 +10,7 @@ MCP_DIR = Path(__file__).resolve().parent.parent
 if str(MCP_DIR) not in sys.path:
     sys.path.insert(0, str(MCP_DIR))
 
-# Fail-closed server refuses to listen without CANON_MCP_TOKEN.
-os.environ.setdefault("CANON_MCP_TOKEN", "test-canon-mcp-token")
-os.environ.setdefault("CANON_COMMIT_TOKEN", "test-canon-commit-token")
+# Fail-closed server refuses to listen without OPENLAW_MCP_TOKEN
+# (CANON_MCP_TOKEN is a deprecated alias).
+os.environ.setdefault("OPENLAW_MCP_TOKEN", "test-openlaw-mcp-token")
+os.environ.setdefault("OPENLAW_COMMIT_TOKEN", "test-openlaw-commit-token")

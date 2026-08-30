@@ -69,7 +69,7 @@ jobs:
           done
           echo "ok: decision frontmatter"
 
-      - name: Canon gates
+      - name: Openlaw gates
         run: bash scripts/check-law.sh
 
       - name: Summarize law/ diff on pull requests
@@ -103,7 +103,7 @@ jobs:
               diff = '(no changes in law/, AGENTS.md, or decisions/)';
             }
             const body = [
-              '### Canon — law/ diff',
+              '### Openlaw — law/ diff',
               '',
               'CI is the agent security layer. Retrieval is not law.',
               '',
@@ -116,7 +116,7 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            const marker = '### Canon — law/ diff';
+            const marker = '### Openlaw — law/ diff';
             const existing = comments.find(c => c.body && c.body.includes(marker));
             if (existing) {
               await github.rest.issues.updateComment({

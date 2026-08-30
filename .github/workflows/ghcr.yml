@@ -10,8 +10,9 @@ permissions:
   contents: read
   packages: write
 
-# Publishes ghcr.io/mattstyles333/canon-mcp:<semver> with a leading v
-# stripped from the git tag (v0.1.0 → 0.1.0). Compose pins :0.1.0.
+# Publishes ghcr.io/mattstyles333/openlaw-mcp:<semver> with a leading v
+# stripped from the git tag (v0.1.0 → 0.1.0).
+# Live Portainer compose still pins ghcr.io/mattstyles333/canon-mcp:0.1.0.
 # Do not put tokens in labels.
 
 jobs:
@@ -29,7 +30,7 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/mattstyles333/canon-mcp
+          images: ghcr.io/mattstyles333/openlaw-mcp
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{raw}}

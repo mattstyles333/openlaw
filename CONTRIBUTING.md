@@ -1,16 +1,16 @@
-# Contributing to Canon
+# Contributing to Openlaw
 
 This repository is **law**, not a memory product and not an agent
 runtime. Contributions should make the law files, the CI that enforces
 them, the harness examples, or the site/docs better.
 
-Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/).
-Onboarding: [docs/onboarding](https://mattstyles333.github.io/canon/docs/onboarding/).
+Website: [mattstyles333.github.io/openlaw](https://mattstyles333.github.io/openlaw/).
+Onboarding: [docs/onboarding](https://mattstyles333.github.io/openlaw/docs/onboarding/).
 
 ## Fork, then replace example law
 
 The `law/` tree is a **Northwind Coffee** template. It is fictional on
-purpose. If you are adopting Canon for a real organisation:
+purpose. If you are adopting Openlaw for a real organisation:
 
 1. Fork the repo.
 2. Replace `law/constraints.md`, `law/brand.md`, `law/sor.md`, and

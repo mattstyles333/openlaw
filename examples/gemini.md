@@ -7,7 +7,7 @@ retrieval is not law.
 ## Law from git
 
 ```bash
-cd /path/to/your-canon-fork
+cd /path/to/your-openlaw-fork
 # Open this directory as the Gemini CLI workspace.
 # GEMINI.md → AGENTS.md → law/.
 bash scripts/check-law.sh

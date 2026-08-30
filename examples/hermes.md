@@ -1,13 +1,13 @@
 # Hermes
 
-Hermes wants a short `SOUL.md`. Canon already has the hard rules
+Hermes wants a short `SOUL.md`. Openlaw already has the hard rules
 in `AGENTS.md`; the excerpt script prints a ~15-line block you can
 paste so the soul file stays small.
 
 ## Law from git + a short soul excerpt
 
 ```bash
-cd /path/to/your-canon-fork
+cd /path/to/your-openlaw-fork
 bash scripts/excerpt-soul.sh
 # Paste stdout into SOUL.md. Leave the rest of law in git.
 ```
@@ -19,7 +19,7 @@ the working tree (or HTTP MCP) so it can read `law/`.
 ## Memory is not law
 
 - Leave `memory.provider` **unset** unless you independently want
-  recall. Canon does not need it.
+  recall. Openlaw does not need it.
 - Do **not** use `MEMORY.md` as the store of policy. `MEMORY.md` is
   recall. Law is `AGENTS.md` + `law/` in git.
 - Do not index `law/` into Hermes memory so it can be "retrieved when
@@ -30,7 +30,7 @@ the working tree (or HTTP MCP) so it can read `law/`.
 
 Same HTTP + bearer as every other harness. Useful when Hermes is
 hosted and cannot see the clone. Public HTTPS for cloud;
-`CANON_MCP_TOKEN` required on the server; HTTP 401 without bearer.
+`OPENLAW_MCP_TOKEN` required on the server; HTTP 401 without bearer.
 
 ## Wipe / start fresh
 
@@ -41,5 +41,5 @@ ignore `MEMORY.md`. Re-paste `bash scripts/excerpt-soul.sh` into
 ## Checks
 
 - `SOUL.md` contains the excerpt and is still short.
-- `memory.provider` is unset in the Canon-only setup.
+- `memory.provider` is unset in the Openlaw-only setup.
 - The agent does not treat a `MEMORY.md` anecdote as a constraint.

@@ -15,7 +15,7 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-# GitHub Pages at https://mattstyles333.github.io/canon/
+# GitHub Pages at https://mattstyles333.github.io/openlaw/
 # No custom domain.
 
 jobs:

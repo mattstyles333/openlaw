@@ -1,4 +1,4 @@
-# Canon MCP (optional)
+# Openlaw MCP (optional)
 
 Thin HTTP projection of this git repo. **Git is the source of truth. MCP is
 not.** Do not treat this server as law. Agents that can see `AGENTS.md` and
@@ -13,7 +13,7 @@ This is not Mem0, not a vector index, and not a generic database server.
 From the repository root (the directory that contains `AGENTS.md` and `law/`):
 
 ```bash
-export CANON_MCP_TOKEN=          # set a real token in your shell; do not commit it
+export OPENLAW_MCP_TOKEN=          # set a real token in your shell; do not commit it
 # optional, for owner tools:
 export CANON_COMMIT_TOKEN=
 
@@ -27,17 +27,17 @@ python server.py --host 0.0.0.0 --port 8787
 ### Run with Docker / Portainer
 
 Production image pin (semver, no `v` prefix):
-`ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+Live pin `ghcr.io/mattstyles333/canon-mcp:0.1.0`. Planned name `ghcr.io/mattstyles333/openlaw-mcp`. Prefer `OPENLAW_MCP_TOKEN`; `CANON_MCP_TOKEN` is a deprecated alias.
 
 Git tag `v0.1.0` publishes that image. Extra tag `:v0.1.0` may exist;
 **compose pins `:0.1.0`**.
 
 ```bash
-export CANON_MCP_TOKEN=          # required; do not commit a value
+export OPENLAW_MCP_TOKEN=          # required; do not commit a value
 docker compose up -d             # repo-root Portainer stack; port 8787
 ```
 
-Portainer: new stack `canon-mcp`, paste `docker-compose.yml`, set
+Portainer: new stack `openlaw-mcp`, paste `docker-compose.yml`, set
 `CANON_MCP_TOKEN` in the stack env UI. Never paste the token into the
 committed file.
 
@@ -59,7 +59,7 @@ sees `AGENTS.md` and `law/`.
 Every request needs:
 
 ```
-Authorization: Bearer <CANON_MCP_TOKEN>
+Authorization: Bearer <OPENLAW_MCP_TOKEN>
 ```
 
 Missing or wrong credentials → **HTTP 401**. There is no anonymous read,
@@ -68,7 +68,7 @@ no stdio fallback, and no "open on localhost" mode for cloud agents.
 ### Owner token
 
 `commit_decision` and `set_priorities` also require `CANON_COMMIT_TOKEN`.
-Send it as `X-Canon-Commit-Token: <CANON_COMMIT_TOKEN>`, or use a bearer that
+Send it as `X-Openlaw-Commit-Token: <CANON_COMMIT_TOKEN>`, or use a bearer that
 matches `CANON_COMMIT_TOKEN` (only if you chose to set the two env vars equal —
 prefer two different values).
 
@@ -100,7 +100,7 @@ HTTP:
 Example:
 
 ```bash
-curl -sS -H "Authorization: Bearer $CANON_MCP_TOKEN" http://127.0.0.1:8787/tools/get_law
+curl -sS -H "Authorization: Bearer $OPENLAW_MCP_TOKEN" http://127.0.0.1:8787/tools/get_law
 ```
 
 ## Public HTTPS for cloud agents
@@ -123,7 +123,7 @@ Default: the filesystem of `law/` and `decisions/` in this clone.
 
 `CANON_POSTGRES_URL` is reserved, documented here, and **off by default**.
 v0.1 does not implement Postgres. The Portainer stack does not ship a
-postgres service. Do not attach a generic Postgres MCP to Canon.
+postgres service. Do not attach a generic Postgres MCP to Openlaw.
 
 ## Smoke tests
 

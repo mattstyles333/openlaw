@@ -2,7 +2,7 @@
 # Production is docker-compose.yml (GHCR pin ghcr.io/mattstyles333/canon-mcp:0.1.0).
 #
 # Usage from the clone root:
-#   export CANON_MCP_TOKEN=          # required; do not commit a value
+#   export OPENLAW_MCP_TOKEN=          # required; do not commit a value
 #   docker compose -f compose.dev.yml up
 #
 # Git is the source of truth. MCP is a projection.

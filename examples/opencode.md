@@ -1,12 +1,12 @@
 # OpenCode
 
 OpenCode loads `AGENTS.md` from the repo. Point the working directory
-at your Canon fork (or a product repo that contains one).
+at your Openlaw fork (or a product repo that contains one).
 
 ## Law from git
 
 ```bash
-cd /path/to/your-canon-fork
+cd /path/to/your-openlaw-fork
 # OpenCode session in this directory.
 # AGENTS.md is law. Retrieval is not.
 ```
@@ -20,8 +20,8 @@ and notes, and keep `law/` as git markdown.
 Remote MCP, OAuth off, bearer on:
 
 - Transport: HTTP (public HTTPS for any agent that is not on localhost).
-- `oauth: false` — Canon MCP is a bearer token, not an OAuth app.
-- Header: `Authorization: Bearer <CANON_MCP_TOKEN>`.
+- `oauth: false` — Openlaw MCP is a bearer token, not an OAuth app.
+- Header: `Authorization: Bearer <OPENLAW_MCP_TOKEN>`.
 - Fail closed: missing bearer is 401, not "anonymous read".
 
 Exact OpenCode config keys move between releases; the invariant is
@@ -31,12 +31,12 @@ live token):
 ```json
 {
   "mcp": {
-    "canon": {
+    "openlaw": {
       "type": "remote",
       "url": "https://law.example.invalid",
       "oauth": false,
       "headers": {
-        "Authorization": "Bearer set-CANON_MCP_TOKEN-in-the-environment-not-in-git"
+        "Authorization": "Bearer set-OPENLAW_MCP_TOKEN-in-the-environment-not-in-git"
       }
     }
   }

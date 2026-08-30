@@ -1,6 +1,6 @@
 # Security model
 
-Canon's security model is boring on purpose. Chief/owner writes
+Openlaw's security model is boring on purpose. Chief/owner writes
 law via git. Specialists propose decisions. CI is the agent security
 layer. Secrets never enter the repo. MCP, when present, fails closed.
 

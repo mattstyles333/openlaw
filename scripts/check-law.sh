@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Canon local CI — the agent security layer for law files.
+# Openlaw local CI — the agent security layer for law files.
 #
 # ADOPTERS: replace the three grep needles in NEEDLE_* below with your
 # organisation's non-negotiable hard rules. Use the SAME strings you
@@ -46,13 +46,13 @@ find_root() {
       return 0
     fi
   fi
-  echo "FAIL: cannot find Canon repo root (need AGENTS.md + law/)" >&2
+  echo "FAIL: cannot find Openlaw repo root (need AGENTS.md + law/)" >&2
   exit 1
 }
 
 ROOT="$(find_root)"
 cd "$ROOT"
-echo "Canon check-law: $ROOT"
+echo "Openlaw check-law: $ROOT"
 
 # 1. Required files ----------------------------------------------------
 REQUIRED=(
@@ -249,7 +249,7 @@ fi
 # 9. Forbidden product-name tokens (needles live in this script; exclude it).
 #    Phrase "always-on law" is allowed. Hyphenated token always-law is not.
 leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh \
-  'AlwaysLaw|alwayslaw|LAW_MCP|always-law' . 2>/dev/null || true)
+  'AlwaysLaw|alwayslaw|always-law|[^N]LAW_MCP|\bCanon\b' . 2>/dev/null || true)
 if [[ -n "$leftover_hits" ]]; then
   echo "$leftover_hits" >&2
   fail "forbidden product-name token in public tree"

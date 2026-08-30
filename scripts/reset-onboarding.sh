@@ -17,14 +17,14 @@ find_root() {
       return 0
     fi
   fi
-  echo "FAIL: cannot find Canon repo root (need AGENTS.md + law/)" >&2
+  echo "FAIL: cannot find Openlaw repo root (need AGENTS.md + law/)" >&2
   exit 1
 }
 
 ROOT="$(find_root)"
 cd "$ROOT"
 
-echo "Canon reset-onboarding: $ROOT"
+echo "Openlaw reset-onboarding: $ROOT"
 echo "Restoring teaching Northwind law from git (law/, AGENTS.md)."
 git checkout -- law/ AGENTS.md
 

@@ -1,8 +1,10 @@
-# Why Canon exists
+# Why Openlaw exists
 
 Always-on law for AI agents, stored as git markdown, never retrieved.
 
-This is **law**, not memory SaaS. The rest of this page is the argument.
+This is **law**, not memory SaaS. This is always-on law for AI agents in
+git, not a legal-document product (and not the defunct ConsenSys OpenLaw
+smart-contract tool). The rest of this page is the argument.
 
 ## Law vs recall
 
@@ -56,13 +58,13 @@ It is the wrong shape for:
 A vector store cannot be CODEOWNERS. A graph edge cannot be an ADR.
 "We retrieved a similar constraint" is not "the constraint loaded."
 
-Use those tools *next to* Canon if you want recall. Do not replace
+Use those tools *next to* Openlaw if you want recall. Do not replace
 `law/` with them. Do not treat Hindsight as the brain. Do not leave
 Hermes `MEMORY.md` as the store of policy. Leave `memory.provider`
 unset if the only thing you needed was law.
 
 gitagent and other "agent OS" projects are a different miss: they want
-to *be* the runtime. Canon is the files your existing harness
+to *be* the runtime. Openlaw is the files your existing harness
 already reads, plus CI that fails when those files are betrayed.
 
 ## Why CI is the security layer

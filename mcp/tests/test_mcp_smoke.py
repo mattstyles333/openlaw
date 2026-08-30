@@ -2,7 +2,7 @@
 
 - With bearer, get_law includes a Northwind example rule.
 - Without bearer, or with a wrong bearer, HTTP 401.
-- Missing / blank CANON_MCP_TOKEN: create_app and main refuse to listen.
+- Missing / blank OPENLAW_MCP_TOKEN (and alias): create_app and main refuse to listen.
 - Shipped server.py has no SQL execution tool and no unauthenticated default.
 No live Postgres. Fixture tokens are local, not secrets.
 """
@@ -17,7 +17,7 @@ from starlette.testclient import TestClient
 
 import server
 
-TOKEN = os.environ["CANON_MCP_TOKEN"]
+TOKEN = os.environ.get("OPENLAW_MCP_TOKEN") or os.environ["CANON_MCP_TOKEN"]
 SERVER_PY = Path(__file__).resolve().parent.parent / "server.py"
 COMPOSE = Path(__file__).resolve().parent.parent.parent / "docker-compose.yml"
 
@@ -63,19 +63,22 @@ def test_wrong_bearer_http_401() -> None:
 def test_create_app_refuses_to_listen_if_token_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("OPENLAW_MCP_TOKEN", raising=False)
     monkeypatch.delenv("CANON_MCP_TOKEN", raising=False)
     with pytest.raises(SystemExit) as excinfo:
         server.create_app()
     msg = str(excinfo.value)
     assert "fail closed" in msg
-    assert "CANON_MCP_TOKEN" in msg
+    assert "OPENLAW_MCP_TOKEN" in msg
     assert "refuse to listen" in msg
 
 
 def test_create_app_refuses_to_listen_if_token_blank(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("OPENLAW_MCP_TOKEN", raising=False)
     monkeypatch.setenv("CANON_MCP_TOKEN", "   ")
+    monkeypatch.setenv("OPENLAW_MCP_TOKEN", "   ")
     with pytest.raises(SystemExit) as excinfo:
         server.create_app()
     assert "fail closed" in str(excinfo.value)
@@ -84,13 +87,14 @@ def test_create_app_refuses_to_listen_if_token_blank(
 def test_main_refuses_to_listen_if_token_missing(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    monkeypatch.delenv("OPENLAW_MCP_TOKEN", raising=False)
     monkeypatch.delenv("CANON_MCP_TOKEN", raising=False)
     with pytest.raises(SystemExit) as excinfo:
         server.main()
     assert excinfo.value.code == 1
     err = capsys.readouterr().err
     assert "fail closed" in err
-    assert "CANON_MCP_TOKEN" in err
+    assert "OPENLAW_MCP_TOKEN" in err
 
 
 def test_shipped_server_has_no_sql_tool_or_auth_bypass() -> None:
@@ -101,4 +105,20 @@ def test_shipped_server_has_no_sql_tool_or_auth_bypass() -> None:
     assert "allow_anonymous" not in text
     compose = COMPOSE.read_text(encoding="utf-8")
     assert "${CANON_MCP_TOKEN:?" in compose
-    assert "${CANON_MCP_TOKEN:-" not in compose
+    assert "OPENLAW_MCP_TOKEN" in compose
+    assert "ghcr.io/mattstyles333/canon-mcp:0.1.0" in compose
+    assert "openlaw-mcp" in compose
+
+
+def test_deprecated_canon_token_alias_still_authenticates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("OPENLAW_MCP_TOKEN", raising=False)
+    monkeypatch.setenv("CANON_MCP_TOKEN", "alias-token-not-a-secret")
+    client = TestClient(server.create_app())
+    response = client.get(
+        "/tools/get_law",
+        headers={"Authorization": "Bearer alias-token-not-a-secret"},
+    )
+    assert response.status_code == 200, response.text
+    assert "Northwind" in response.text

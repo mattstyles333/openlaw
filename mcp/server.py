@@ -1,18 +1,19 @@
-"""Canon MCP — thin HTTP projection of git. Not the source of truth.
+"""Openlaw MCP — thin HTTP projection of git. Not the source of truth.
 
 Git markdown (law/, decisions/) is canonical. This process only reads and
 writes those files. It does not search, embed, or replace AGENTS.md.
 
 Auth (fail closed):
-  - CANON_MCP_TOKEN is required at startup; refuse to listen if unset.
+  - OPENLAW_MCP_TOKEN is required at startup; refuse to listen if unset.
+    CANON_MCP_TOKEN is a deprecated alias so existing Portainer stacks keep working.
   - Every HTTP request needs Authorization: Bearer <token>.
   - Missing or wrong bearer → HTTP 401. There is no anonymous mode.
   - Owner tools (commit_decision, set_priorities) also require
-    CANON_COMMIT_TOKEN (X-Canon-Commit-Token header, or the same value as
-    the Authorization bearer).
+    OPENLAW_COMMIT_TOKEN (X-Openlaw-Commit-Token header, or the same value as
+    the Authorization bearer). CANON_COMMIT_TOKEN is a deprecated alias.
 
 v0.1 persists to the law/ and decisions/ filesystem only.
-Optional CANON_POSTGRES_URL is documented in README.md, off by default,
+Optional OPENLAW_POSTGRES_URL is documented in README.md, off by default,
 and not implemented here. This projection is not a generic database MCP
 and has no SQL tool.
 """
@@ -36,7 +37,7 @@ from starlette.responses import JSONResponse, PlainTextResponse, Response
 from starlette.routing import Route
 
 PROTOCOL_VERSION = "2025-03-26"
-SERVER_NAME = "canon"
+SERVER_NAME = "openlaw"
 SERVER_VERSION = "0.1.0"
 
 
@@ -58,7 +59,7 @@ def find_repo_root(start: Path | None = None) -> Path:
             if (candidate / "AGENTS.md").is_file() and (candidate / "law").is_dir():
                 return candidate
     raise FileNotFoundError(
-        "cannot find Canon repo root (need AGENTS.md + law/)"
+        "cannot find Openlaw repo root (need AGENTS.md + law/)"
     )
 
 
@@ -76,11 +77,18 @@ def _write(path: Path, text: str) -> None:
 # ---------------------------------------------------------------------------
 
 def mcp_token() -> str:
+    # Prefer OPENLAW_MCP_TOKEN. CANON_MCP_TOKEN is a deprecated alias.
     # Whitespace-only is unset. Fail closed: no default token.
+    primary = (os.environ.get("OPENLAW_MCP_TOKEN") or "").strip()
+    if primary:
+        return primary
     return (os.environ.get("CANON_MCP_TOKEN") or "").strip()
 
 
 def commit_token() -> str:
+    primary = (os.environ.get("OPENLAW_COMMIT_TOKEN") or "").strip()
+    if primary:
+        return primary
     return (os.environ.get("CANON_COMMIT_TOKEN") or "").strip()
 
 
@@ -113,7 +121,7 @@ class BearerGate:
         if not expected:
             body = json.dumps(
                 {
-                    "error": "fail closed: CANON_MCP_TOKEN is unset; refuse to listen"
+                    "error": "fail closed: OPENLAW_MCP_TOKEN is unset; refuse to listen"
                 }
             ).encode()
             await send(
@@ -156,21 +164,25 @@ class BearerGate:
 
 
 def require_owner(request: Request) -> None:
-    """Owner tools fail closed unless CANON_COMMIT_TOKEN matches."""
+    """Owner tools fail closed unless OPENLAW_COMMIT_TOKEN (or alias) matches."""
     expected = commit_token()
     if not expected:
         raise PermissionError(
-            "owner tools fail closed: CANON_COMMIT_TOKEN is unset"
+            "owner tools fail closed: OPENLAW_COMMIT_TOKEN is unset"
         )
-    header = (request.headers.get("x-canon-commit-token") or "").strip()
+    header = (
+        request.headers.get("x-openlaw-commit-token")
+        or request.headers.get("x-canon-commit-token")
+        or ""
+    ).strip()
     bearer = _bearer_from_request(request)
     if header and hmac.compare_digest(header, expected):
         return
     if bearer and hmac.compare_digest(bearer, expected):
         return
     raise PermissionError(
-        "owner tools require CANON_COMMIT_TOKEN "
-        "(X-Canon-Commit-Token header, or Authorization bearer matching it)"
+        "owner tools require OPENLAW_COMMIT_TOKEN "
+        "(X-Openlaw-Commit-Token header, or Authorization bearer matching it)"
     )
 
 
@@ -457,7 +469,7 @@ async def handle_mcp(request: Request) -> Response:
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
                 "instructions": (
-                    "Canon MCP is a projection of git. Git is the source of truth. "
+                    "Openlaw MCP is a projection of git. Git is the source of truth. "
                     "get_law returns full current files, not a search ranking."
                 ),
             },
@@ -522,11 +534,11 @@ async def handle_health(request: Request) -> Response:
 
 
 def create_app() -> Starlette:
-    """Build the HTTP app. Fail closed if CANON_MCP_TOKEN is unset."""
+    """Build the HTTP app. Fail closed if OPENLAW_MCP_TOKEN is unset."""
     token = mcp_token()
     if not token:
         raise SystemExit(
-            "fail closed: CANON_MCP_TOKEN is unset; refuse to listen"
+            "fail closed: OPENLAW_MCP_TOKEN is unset; refuse to listen"
         )
     starlette_app = Starlette(
         routes=[
@@ -542,18 +554,27 @@ def create_app() -> Starlette:
 def main() -> None:
     if not mcp_token():
         print(
-            "fail closed: CANON_MCP_TOKEN is unset; refuse to listen",
+            "fail closed: OPENLAW_MCP_TOKEN is unset; refuse to listen",
             file=sys.stderr,
         )
         sys.exit(1)
     parser = argparse.ArgumentParser(
-        description="Canon MCP HTTP projection. Git is the source of truth."
+        description="Openlaw MCP HTTP projection. Git is the source of truth."
     )
-    parser.add_argument("--host", default=os.environ.get("CANON_MCP_HOST", "0.0.0.0"))
+    parser.add_argument(
+        "--host",
+        default=os.environ.get("OPENLAW_MCP_HOST")
+        or os.environ.get("CANON_MCP_HOST")
+        or "0.0.0.0",
+    )
     parser.add_argument(
         "--port",
         type=int,
-        default=int(os.environ.get("CANON_MCP_PORT", "8787")),
+        default=int(
+            os.environ.get("OPENLAW_MCP_PORT")
+            or os.environ.get("CANON_MCP_PORT")
+            or "8787"
+        ),
     )
     args = parser.parse_args()
     uvicorn.run(create_app(), host=args.host, port=args.port, log_level="info")

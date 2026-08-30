@@ -1,10 +1,10 @@
-# Canon v0.1 status
+# Openlaw v0.1 status
 
 Always-on law for AI agents, stored as git markdown, never retrieved.
 This is law, not memory. The example company in the template is
 **Northwind Coffee** (fictional). Replace `law/` on fork.
 
-Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/).
+Website: [mattstyles333.github.io/openlaw](https://mattstyles333.github.io/openlaw/).
 
 Git is the source of truth. CI is the agent security layer. Optional MCP
 is a projection of git. Herdr is a multiplexer, not a brain.
@@ -42,17 +42,17 @@ pytest tests
 
 ## Run with Docker / Portainer
 
-Pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0` (semver, no `v` prefix).
+Live pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0`. Planned name: `ghcr.io/mattstyles333/openlaw-mcp`. Prefer `OPENLAW_MCP_TOKEN`; `CANON_MCP_TOKEN` is a deprecated alias.
 Git tag `v0.1.0` publishes it; compose pins `:0.1.0`. Extra `:v0.1.0`
 may exist.
 
 ```bash
-export CANON_MCP_TOKEN=          # required; do not commit a value
-docker compose up -d             # Portainer stack name: canon-mcp
+export OPENLAW_MCP_TOKEN=          # required; do not commit a value
+docker compose up -d             # Portainer stack name: openlaw-mcp
 docker pull ghcr.io/mattstyles333/canon-mcp:0.1.0
 ```
 
-Portainer: new stack `canon-mcp`, paste `docker-compose.yml`, set
+Portainer: new stack `openlaw-mcp`, paste `docker-compose.yml`, set
 `CANON_MCP_TOKEN` in the UI. Do not paste the token into git.
 
 See [mcp/README.md](../mcp/README.md). Cloud agents need public HTTPS,

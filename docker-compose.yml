@@ -1,12 +1,12 @@
-# Canon optional MCP — Portainer stack file (stack name: canon-mcp).
+# Openlaw optional MCP — Portainer stack file (stack name: openlaw-mcp).
 #
 # Git is the source of truth. This container is a projection of git, not law.
-# Set CANON_MCP_TOKEN in the environment or in the Portainer stack env UI.
-# Never commit the token. Never paste it into this file.
+# Prefer OPENLAW_MCP_TOKEN. CANON_MCP_TOKEN is a deprecated alias so existing
+# Portainer env keeps working. Never commit a token. Never paste it here.
 #
-# Image pin (compose / Portainer): ghcr.io/mattstyles333/canon-mcp:0.1.0
-# Git tag v0.1.0 publishes that stripped semver. An extra :v0.1.0 tag may
-# also exist; pin compose to :0.1.0.
+# Live image pin (do not delete this pass): ghcr.io/mattstyles333/canon-mcp:0.1.0
+# Planned image name: ghcr.io/mattstyles333/openlaw-mcp
+# Git tag v0.1.0 published the live pin. Compose still pins :0.1.0.
 #
 # Postgres is reserved/unimplemented in v0.1 and is not shipped here.
 
@@ -16,6 +16,8 @@ services:
     ports:
       - "8787:8787"
     environment:
-      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN:?CANON_MCP_TOKEN is required}
+      OPENLAW_MCP_TOKEN: ${OPENLAW_MCP_TOKEN:-}
+      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN:?OPENLAW_MCP_TOKEN or CANON_MCP_TOKEN is required}
+      OPENLAW_COMMIT_TOKEN: ${OPENLAW_COMMIT_TOKEN:-}
       CANON_COMMIT_TOKEN: ${CANON_COMMIT_TOKEN:-}
     restart: unless-stopped

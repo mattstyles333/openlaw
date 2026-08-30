@@ -1,6 +1,6 @@
 # Harness attach
 
-Canon is not a runtime. It attaches to the harness you already
+Openlaw is not a runtime. It attaches to the harness you already
 use. Law loads as markdown the harness already reads; optional MCP is
 the same HTTP projection for agents that cannot see the working tree.
 

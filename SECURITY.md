@@ -22,7 +22,7 @@ project; there is no bug bounty.
 
 - "An agent ignored AGENTS.md." That is why CI exists. Teach the
   harness; do not treat a model refusal-to-follow-instructions as a
-  Canon CVE.
+  Openlaw CVE.
 - Secrets you committed to **your fork's** `law/`. Rotate them; this
   template cannot unsay them.
 

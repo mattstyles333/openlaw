@@ -6,8 +6,8 @@ the attach. You do not need a plugin to have law.
 ## Law from git
 
 ```bash
-git clone https://github.com/YOU/your-canon-fork.git
-cd your-canon-fork
+git clone https://github.com/YOU/your-openlaw-fork.git
+cd your-openlaw-fork
 # Open this directory as the Grok Build workspace.
 # AGENTS.md is always-on. law/ is pointed at from AGENTS.md.
 bash scripts/check-law.sh
@@ -22,7 +22,7 @@ When the session cannot see a particular canonical clone (or you want
 the same law on a bot that is not this workspace):
 
 ```bash
-# Public HTTPS URL of the Canon MCP. Bearer required on the server.
+# Public HTTPS URL of the Openlaw MCP. Bearer required on the server.
 # Configure the client with the same bearer; do not commit CANON_MCP_TOKEN.
 grok mcp add --transport http https://law.example.invalid
 ```

@@ -18,25 +18,24 @@ def test_leftover_gate_needles_and_self_exclude() -> None:
     text = CHECK.read_text(encoding="utf-8")
     always_law_camel = "Always" + "Law"
     always_law_lower = "always" + "law"
-    old_env_prefix = "LAW_" + "MCP"
     hyphen_token = "always" + "-law"
     always_on = "always" + "-on"
-    needle = "|".join(
-        [always_law_camel, always_law_lower, old_env_prefix, hyphen_token]
-    )
-    assert needle in text
+    old_display = "Can" + "on"
+    assert always_law_camel in text
+    assert always_law_lower in text
+    assert hyphen_token in text
+    assert old_display in text
     assert "--exclude=check-law.sh" in text
     assert always_on in text
     assert hyphen_token != always_on
-    assert always_on not in needle
 
 
-def test_site_is_astro_starlight_with_canon_base() -> None:
+def test_site_is_astro_starlight_with_openlaw_base() -> None:
     pkg = (SITE / "package.json").read_text(encoding="utf-8")
     assert '"astro"' in pkg
     assert "@astrojs/starlight" in pkg
     cfg = (SITE / "astro.config.mjs").read_text(encoding="utf-8")
-    assert "base: '/canon/'" in cfg
+    assert "base: '/openlaw/'" in cfg
     assert "mattstyles333.github.io" in cfg
     home = (SITE / "src" / "pages" / "index.astro").read_text(encoding="utf-8")
     assert "canon-hero.png" in home

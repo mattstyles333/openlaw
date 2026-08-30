@@ -1,8 +1,8 @@
-# Canon
+# Openlaw
 
-> Paste this into your coding agent to install Canon as always-on law.
+> Paste this into your coding agent to install Openlaw as always-on law.
 
-Memory products retrieve similar chunks and hope the agent obeys. Canon is **always-on law**: short git markdown in context every session, locked by CI. If it is not in git, it is not policy.
+Memory products retrieve similar chunks and hope the agent obeys. Openlaw is **always-on law**: short git markdown in context every session, locked by CI. If it is not in git, it is not policy.
 
 Open source. MIT. Free forever. Self-hosted, local-first. Self host it. No SaaS. No vendor lock-in.
 
@@ -10,16 +10,16 @@ Not a memory SaaS. Not a new agent OS. Optional MCP is an HTTP projection of git
 
 Fork it. Replace `law/`. Teaching example: fictional **Northwind Coffee**.
 
-Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/) ·
-[Onboarding](https://mattstyles333.github.io/canon/docs/onboarding/) ·
+Website: [mattstyles333.github.io/openlaw](https://mattstyles333.github.io/openlaw/) ·
+[Onboarding](https://mattstyles333.github.io/openlaw/docs/onboarding/) ·
 [llms.txt](llms.txt) ·
 [MIT](LICENSE)
 
 ## Quickstart
 
 ```bash
-git clone https://github.com/mattstyles333/canon.git
-cd canon
+git clone https://github.com/mattstyles333/openlaw.git
+cd openlaw
 # Replace law/ with yours. Inline three hard rules in AGENTS.md (max 80 lines / 12 KB).
 bash scripts/check-law.sh
 ```
@@ -32,30 +32,30 @@ Hard rules (template — replace the needles in `scripts/check-law.sh` on fork):
 
 Specialists propose ADRs in `decisions/` (`status: proposed`). Owners in `CODEOWNERS` merge. Do not silently edit `law/constraints.md`.
 
-Docs-only attach (Herdr, Grok Build, Cursor Grok Bot, Hermes, OpenCode, Portainer, GitHub Actions): [onboarding](https://mattstyles333.github.io/canon/docs/onboarding/).
+Docs-only attach (Herdr, Grok Build, Cursor Grok Bot, Hermes, OpenCode, Portainer, GitHub Actions): [onboarding](https://mattstyles333.github.io/openlaw/docs/onboarding/).
 
 ## Install prompts
 
-Paste this into your coding agent to install Canon as always-on law.
+Paste this into your coding agent to install Openlaw as always-on law.
 
 ```
-Install Canon as always-on law. Open source, MIT, self-hosted. Not a memory SaaS. Not a new agent OS.
+Install Openlaw as always-on law. Open source, MIT, self-hosted. Not a memory SaaS. Not a new agent OS.
 
-1. Clone https://github.com/mattstyles333/canon.git (or fork). cwd MUST be the repo root: AGENTS.md and law/ exist.
+1. Clone https://github.com/mattstyles333/openlaw.git (or fork). cwd MUST be the repo root: AGENTS.md and law/ exist.
 2. Read AGENTS.md. Retrieval is not law. If it is not in git, it is not policy. Keep AGENTS.md under 80 lines / 12 KB with three hard rules inlined. Teaching example is fictional Northwind Coffee; replace law/ when adopting.
 3. Turn CI on: run bash scripts/check-law.sh. Enable GitHub Actions (law-check, secret-scan, agent-security, mcp-test).
-4. Optional MCP only if you cannot see the working tree: public HTTPS, fail-closed bearer. Never commit CANON_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0. Example: grok mcp add --transport http https://YOUR-PUBLIC-MCP-HOST
+4. Optional MCP only if you cannot see the working tree: public HTTPS, fail-closed bearer. Never commit OPENLAW_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0. Example: grok mcp add --transport http https://YOUR-PUBLIC-MCP-HOST
 5. You are done when bash scripts/check-law.sh exits 0.
 ```
 
 ### Herdr / Grok Build
 
 ```
-You are a Grok Build / Herdr agent. Install Canon as always-on law.
+You are a Grok Build / Herdr agent. Install Openlaw as always-on law.
 
-1. cwd = this git repo. Clone https://github.com/mattstyles333/canon.git if needed. Herdr pane cwd MUST be the clone. Do not grok --resume an old session for a blank install.
+1. cwd = this git repo. Clone https://github.com/mattstyles333/openlaw.git if needed. Herdr pane cwd MUST be the clone. Do not grok --resume an old session for a blank install.
 2. Read AGENTS.md and law/. Retrieval is not law. If it is not in git, it is not policy.
-3. Optional MCP: grok mcp add --transport http https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $CANON_MCP_TOKEN — never commit the token; unset token must fail closed. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+3. Optional MCP: grok mcp add --transport http https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit OPENLAW_MCP_TOKEN; unset token must fail closed. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 4. Turn CI on: bash scripts/check-law.sh and enable GitHub Actions (law-check, secret-scan, agent-security, mcp-test).
 5. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -63,11 +63,11 @@ You are a Grok Build / Herdr agent. Install Canon as always-on law.
 ### Cursor Grok Bot
 
 ```
-You are Cursor Grok Bot. Install Canon as always-on law.
+You are Cursor Grok Bot. Install Openlaw as always-on law.
 
-1. Clone https://github.com/mattstyles333/canon.git into /workspace (the Bot workspace root). cwd is /workspace. Read AGENTS.md, law/, .cursor/rules/law.mdc (alwaysApply).
+1. Clone https://github.com/mattstyles333/openlaw.git into /workspace (the Bot workspace root). cwd is /workspace. Read AGENTS.md, law/, .cursor/rules/law.mdc (alwaysApply).
 2. Retrieval is not law. If it is not in git, it is not policy.
-3. Optional account-wide HTTP MCP on public HTTPS (not localhost, not tailnet, not stdio): URL https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $CANON_MCP_TOKEN — never commit the token. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+3. Optional account-wide HTTP MCP on public HTTPS (not localhost, not tailnet, not stdio): URL https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit OPENLAW_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 4. Human: enable GitHub Actions on the fork. Run bash scripts/check-law.sh if you have a shell.
 5. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -75,10 +75,10 @@ You are Cursor Grok Bot. Install Canon as always-on law.
 ### Hermes
 
 ```
-You are Hermes. Install Canon as always-on law.
+You are Hermes. Install Openlaw as always-on law.
 
-1. cwd = clone of https://github.com/mattstyles333/canon.git. Read AGENTS.md. Run bash scripts/excerpt-soul.sh and put stdout in SOUL.md. Leave memory.provider unset. Do not use MEMORY.md as law.
-2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $CANON_MCP_TOKEN — never commit the token. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+1. cwd = clone of https://github.com/mattstyles333/openlaw.git. Read AGENTS.md. Run bash scripts/excerpt-soul.sh and put stdout in SOUL.md. Leave memory.provider unset. Do not use MEMORY.md as law.
+2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit OPENLAW_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 3. Turn CI on: bash scripts/check-law.sh and GitHub Actions.
 4. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -86,10 +86,10 @@ You are Hermes. Install Canon as always-on law.
 ### OpenCode
 
 ```
-You are OpenCode. Install Canon as always-on law.
+You are OpenCode. Install Openlaw as always-on law.
 
-1. cwd = clone of https://github.com/mattstyles333/canon.git. Read AGENTS.md. Retrieval is not law.
-2. Optional remote HTTP MCP: oauth false, URL https://YOUR-PUBLIC-MCP-HOST, Authorization: Bearer $CANON_MCP_TOKEN — never commit a live token in opencode.json. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+1. cwd = clone of https://github.com/mattstyles333/openlaw.git. Read AGENTS.md. Retrieval is not law.
+2. Optional remote HTTP MCP: oauth false, URL https://YOUR-PUBLIC-MCP-HOST, Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit a live token in opencode.json. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 3. Turn CI on: bash scripts/check-law.sh and GitHub Actions.
 4. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -97,10 +97,10 @@ You are OpenCode. Install Canon as always-on law.
 ### Claude Code
 
 ```
-You are Claude Code. Install Canon as always-on law.
+You are Claude Code. Install Openlaw as always-on law.
 
-1. cwd = clone of https://github.com/mattstyles333/canon.git. Read CLAUDE.md, then AGENTS.md and law/.
-2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $CANON_MCP_TOKEN — never commit the token. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+1. cwd = clone of https://github.com/mattstyles333/openlaw.git. Read CLAUDE.md, then AGENTS.md and law/.
+2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit OPENLAW_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 3. Turn CI on: bash scripts/check-law.sh and GitHub Actions.
 4. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -108,10 +108,10 @@ You are Claude Code. Install Canon as always-on law.
 ### Gemini CLI
 
 ```
-You are Gemini CLI. Install Canon as always-on law.
+You are Gemini CLI. Install Openlaw as always-on law.
 
-1. cwd = clone of https://github.com/mattstyles333/canon.git. Read GEMINI.md, then AGENTS.md and law/.
-2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $CANON_MCP_TOKEN — never commit the token. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
+1. cwd = clone of https://github.com/mattstyles333/openlaw.git. Read GEMINI.md, then AGENTS.md and law/.
+2. Optional HTTP MCP: public HTTPS https://YOUR-PUBLIC-MCP-HOST with Authorization: Bearer $OPENLAW_MCP_TOKEN — never commit OPENLAW_MCP_TOKEN. Pin ghcr.io/mattstyles333/canon-mcp:0.1.0.
 3. Turn CI on: bash scripts/check-law.sh and GitHub Actions.
 4. You are done when bash scripts/check-law.sh exits 0.
 ```
@@ -130,14 +130,15 @@ Agents will rewrite policy if you let them. CI is how you do not.
 
 ## Docker / Portainer
 
-Pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0` (semver, no `v`).
+Live pin (Portainer): `ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+Planned image: `ghcr.io/mattstyles333/openlaw-mcp`. Prefer `OPENLAW_MCP_TOKEN`; `CANON_MCP_TOKEN` still works.
 
 ```bash
-export CANON_MCP_TOKEN=          # required; never commit
+export OPENLAW_MCP_TOKEN=          # required; never commit
 docker compose up -d             # stack file; port 8787
 ```
 
-Portainer: stack name `canon-mcp`, paste `docker-compose.yml`, set `CANON_MCP_TOKEN` in the UI. Missing token fails closed. No postgres service. No bind-mount.
+Portainer: stack name `openlaw-mcp`, paste `docker-compose.yml`, set `OPENLAW_MCP_TOKEN` (or deprecated `CANON_MCP_TOKEN`) in the UI. Missing token fails closed. No postgres service. No bind-mount.
 
 ## Restart from zero
 
@@ -182,4 +183,4 @@ scripts/reset-onboarding.sh   restore Northwind; print harness wipes
 
 ## License
 
-[MIT](LICENSE) © 2026 Canon contributors. Open source. Free forever.
+[MIT](LICENSE) © 2026 Openlaw contributors. Open source. Free forever.

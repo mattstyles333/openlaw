@@ -3,19 +3,19 @@ import starlight from '@astrojs/starlight';
 
 export default defineConfig({
   site: 'https://mattstyles333.github.io',
-  base: '/canon/',
+  base: '/openlaw/',
   integrations: [
     starlight({
-      title: 'Canon',
+      title: 'Openlaw',
       description:
         'Always-on law for AI agents. Git markdown. Never retrieved.',
       favicon: '/canon-mark.png',
-      customCss: ['./src/styles/canon.css'],
+      customCss: ['./src/styles/openlaw.css'],
       social: [
         {
           icon: 'github',
           label: 'GitHub',
-          href: 'https://github.com/mattstyles333/canon',
+          href: 'https://github.com/mattstyles333/openlaw',
         },
       ],
       sidebar: [
@@ -37,14 +37,14 @@ export default defineConfig({
           tag: 'meta',
           attrs: {
             property: 'og:image',
-            content: 'https://mattstyles333.github.io/canon/canon-og.png',
+            content: 'https://mattstyles333.github.io/openlaw/canon-og.png',
           },
         },
         {
           tag: 'link',
           attrs: {
             rel: 'icon',
-            href: '/canon/canon-mark.png',
+            href: '/openlaw/canon-mark.png',
             type: 'image/png',
           },
         },

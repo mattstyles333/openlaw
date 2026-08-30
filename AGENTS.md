@@ -1,4 +1,4 @@
-# Canon — always-on law for agents
+# Openlaw — always-on law for agents
 
 This repository is **law**, not memory. Retrieval is not law. Agents MUST
 load this file and `law/` on every session. Similarity search is not a

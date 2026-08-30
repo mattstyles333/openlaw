@@ -1,4 +1,4 @@
-# Review cycles (Canon v0.1)
+# Review cycles (Openlaw v0.1)
 
 Three independent review cycles. Each lists findings, in-repo fixes,
 re-run results, and what still fails. Cycles 2 and 3 inspect different

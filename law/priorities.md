@@ -5,7 +5,7 @@ forever.
 
 Fictional independent coffee roaster and cafe. Replace this file on fork.
 
-1. Ship Canon v0.1 template.
+1. Ship Openlaw v0.1 template.
 2. Replace example law with the adopter's.
 3. Turn on CI in the fork.
 

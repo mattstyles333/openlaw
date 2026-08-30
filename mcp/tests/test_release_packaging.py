@@ -26,7 +26,8 @@ def test_compose_is_ghcr_portainer_stack() -> None:
     assert "image: postgres" not in text
     assert not re.search(r"(?m)^  postgres:", text)
     assert "${CANON_MCP_TOKEN:?" in text
-    assert "${CANON_MCP_TOKEN:-" not in text
+    assert "OPENLAW_MCP_TOKEN" in text
+    assert "openlaw-mcp" in text
     assert "restart: unless-stopped" in text
     assert "8787:8787" in text
 
@@ -42,6 +43,7 @@ def test_dockerfile_bakes_law_and_fail_closed_healthcheck() -> None:
     assert "urllib.request" in text
     assert "Authorization" in text
     assert "Bearer" in text
+    assert "OPENLAW_MCP_TOKEN" in text
     assert "CANON_MCP_TOKEN" in text
     assert "--uid 1000" in text
     assert "useradd" in text
@@ -60,6 +62,6 @@ def test_ghcr_workflow_publishes_stripped_semver() -> None:
     assert "ghcr.io" in text
     assert "github.actor" in text
     assert "secrets.GITHUB_TOKEN" in text
-    assert "ghcr.io/mattstyles333/canon-mcp" in text
+    assert "ghcr.io/mattstyles333/openlaw-mcp" in text
     assert "{{version}}" in text
     assert "CANON_MCP_TOKEN=" not in text

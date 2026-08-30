@@ -2,16 +2,16 @@
 
 Herdr is a **multiplexer, not a brain**. It does not store policy, it
 does not retrieve policy, and it does not outrank `AGENTS.md`. Each
-pane is an agent with a working directory; Canon lives in that
+pane is an agent with a working directory; Openlaw lives in that
 directory.
 
 ## Pane cwd = repo
 
-Start the pane with cwd set to the Canon clone (or to the product
+Start the pane with cwd set to the Openlaw clone (or to the product
 repo that is your law fork):
 
 ```bash
-cd /path/to/canon   # or your fork
+cd /path/to/openlaw   # or your fork
 grok --resume           # continue this pane; do not start a second brain
 ```
 
@@ -33,7 +33,7 @@ interpret constraints.
 
 Only if the pane cannot see the working tree (unusual for Herdr).
 Same HTTP + bearer rules as every other harness: public HTTPS,
-`CANON_MCP_TOKEN` required on the server, missing bearer is **401**.
+`OPENLAW_MCP_TOKEN` required on the server, missing bearer is **401**.
 Prefer the files on disk.
 
 ## Wipe / start fresh

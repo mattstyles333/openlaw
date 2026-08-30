@@ -1,7 +1,7 @@
-# Canon gitleaks config.
+# Openlaw gitleaks config.
 # Docs may mention token *names* (bearer, CANON_MCP_TOKEN). Values must still fail.
 # Do not globally allowlist env var names — that would hide CANON_MCP_TOKEN=<secret>.
-title = "Canon"
+title = "Openlaw"
 
 [extend]
 useDefault = true

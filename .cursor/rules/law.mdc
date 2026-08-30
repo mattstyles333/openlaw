@@ -1,0 +1,10 @@
+---
+description: AlwaysLaw — always-on law for this repo
+alwaysApply: true
+---
+
+Read `AGENTS.md` and `law/` before doing any work in this repository.
+
+This repo is **law**, not memory. Retrieval is not law. Do not invent
+company policy. Propose decisions in `decisions/`; do not edit
+`law/constraints.md` without review.

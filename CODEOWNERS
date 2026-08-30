@@ -1,0 +1,6 @@
+# Law and agent instructions require owners.
+# CI fails if this file does not cover law/ and AGENTS.md.
+* @mattstyles333
+/law/ @mattstyles333
+/AGENTS.md @mattstyles333
+/decisions/ @mattstyles333

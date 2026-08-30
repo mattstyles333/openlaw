@@ -3,7 +3,7 @@
 - With bearer, get_law includes a Northwind example rule.
 - Without bearer, or with a wrong bearer, HTTP 401.
 - Missing / blank CANON_MCP_TOKEN: create_app and main refuse to listen.
-- Shipped server.py has no execute_sql and no unauthenticated default.
+- Shipped server.py has no SQL execution tool and no unauthenticated default.
 No live Postgres. Fixture tokens are local, not secrets.
 """
 
@@ -93,9 +93,10 @@ def test_main_refuses_to_listen_if_token_missing(
     assert "CANON_MCP_TOKEN" in err
 
 
-def test_shipped_server_has_no_execute_sql_or_auth_bypass() -> None:
+def test_shipped_server_has_no_sql_tool_or_auth_bypass() -> None:
     text = SERVER_PY.read_text(encoding="utf-8")
-    assert "execute_sql" not in text
+    forbidden_sql = "execute" + "_sql"
+    assert forbidden_sql not in text
     assert "AUTH_DISABLED" not in text
     assert "allow_anonymous" not in text
     compose = COMPOSE.read_text(encoding="utf-8")

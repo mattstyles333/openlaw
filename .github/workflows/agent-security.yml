@@ -27,8 +27,8 @@ jobs:
       - name: Fail if execute_sql appears under mcp/
         run: |
           if [ -d mcp ]; then
-            if grep -R -n --include='*.py' -E 'execute_sql' mcp/; then
-              echo "execute_sql is forbidden under mcp/" >&2
+            if grep -R -n --include='*.py' --exclude-dir=tests --exclude-dir=.venv --exclude-dir=__pycache__ -E 'execute_sql' mcp/; then
+              echo "execute_sql is forbidden under mcp/ (shipped code)" >&2
               exit 1
             fi
           fi

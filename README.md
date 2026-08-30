@@ -11,6 +11,7 @@ brain.
 [Why not Mem0 / Hindsight / Graphiti / Letta / ByteRover](docs/WHY.md) ·
 [Security model](docs/SECURITY-MODEL.md) ·
 [Harness attach](docs/HARNESS.md) ·
+[Changelog](CHANGELOG.md) ·
 [MIT License](LICENSE)
 
 ---
@@ -106,15 +107,32 @@ tailnet-only, not stdio, not localhost.
 
 `CANON_MCP_TOKEN` is required. The process refuses to listen if it is unset.
 Owner tools (`commit_decision`, `set_priorities`) also need
-`CANON_COMMIT_TOKEN`. There is no `execute_sql`. Postgres is an opt-in
-Compose profile and stays off by default.
+`CANON_COMMIT_TOKEN`. There is no `execute_sql`. Postgres is reserved and
+unimplemented; it is not in the default compose stack.
+
+### Run with Docker / Portainer
+
+Production pin (semver, no `v` prefix):
+`ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+
+Git tag `v0.1.0` publishes that image to GHCR. An extra `:v0.1.0` tag may
+also exist; **compose and Portainer pin `:0.1.0`**.
 
 ```bash
-export CANON_MCP_TOKEN=          # required; no default secret
-docker compose up mcp          # listens on 8787
-
-cd mcp && python -m pip install -e ".[dev]" && pytest tests
+export CANON_MCP_TOKEN=          # required; no default secret; do not commit
+docker compose up -d             # Portainer stack file; listens on 8787
 ```
+
+Portainer: new stack named `canon-mcp`, paste `docker-compose.yml`, set
+`CANON_MCP_TOKEN` in the stack environment UI. Do not paste the token
+into the committed compose file.
+
+```bash
+docker pull ghcr.io/mattstyles333/canon-mcp:0.1.0
+```
+
+Local pip-install remains for developers (`cd mcp && pip install -e ".[dev]"`).
+Bind-mount development uses `compose.dev.yml`, not the Portainer stack.
 
 Details: [mcp/README.md](mcp/README.md). [v0.1 status](docs/STATUS.md).
 
@@ -127,11 +145,13 @@ CLAUDE.md / GEMINI.md     one-line pointers
 law/                      constraints, brand, SoR, priorities
 decisions/                ADRs (propose; owners merge)
 mcp/                      optional HTTP projection of git
+Dockerfile                production image for the MCP projection
+CHANGELOG.md              0.1.0 first public release
 docs/                     why, security model, harness matrix
 examples/                 attach recipes per harness
 scripts/check-law.sh      local CI
 scripts/excerpt-soul.sh   Hermes SOUL.md hard-rule block
-docker-compose.yml        MCP on 8787; postgres profile off
+docker-compose.yml        Portainer stack: GHCR pin :0.1.0, port 8787
 ```
 
 ## Local CI

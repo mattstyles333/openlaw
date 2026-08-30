@@ -31,15 +31,27 @@ listen if it is unset. Without a bearer, HTTP 401. With a bearer,
 policy` or `always-on`). No live Postgres.
 
 ```bash
-export CANON_MCP_TOKEN=          # required; do not commit a value
-docker compose up mcp          # port 8787
-
 cd mcp
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -e ".[dev]"
 pytest tests
 ```
+
+## Run with Docker / Portainer
+
+Pin: `ghcr.io/mattstyles333/canon-mcp:0.1.0` (semver, no `v` prefix).
+Git tag `v0.1.0` publishes it; compose pins `:0.1.0`. Extra `:v0.1.0`
+may exist.
+
+```bash
+export CANON_MCP_TOKEN=          # required; do not commit a value
+docker compose up -d             # Portainer stack name: canon-mcp
+docker pull ghcr.io/mattstyles333/canon-mcp:0.1.0
+```
+
+Portainer: new stack `canon-mcp`, paste `docker-compose.yml`, set
+`CANON_MCP_TOKEN` in the UI. Do not paste the token into git.
 
 See [mcp/README.md](../mcp/README.md). Cloud agents need public HTTPS,
 not tailnet-only, not stdio, not localhost.

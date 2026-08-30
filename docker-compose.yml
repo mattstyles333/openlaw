@@ -1,36 +1,21 @@
-# Canon optional MCP. Git is the source of truth; this is a projection.
-# Default: only the mcp service. Postgres is a profile and stays off.
+# Canon optional MCP — Portainer stack file (stack name: canon-mcp).
 #
-# CANON_MCP_TOKEN is required (no fallback secret). The server refuses to
-# listen if it is unset:
-#   export CANON_MCP_TOKEN=...
-#   docker compose up mcp
+# Git is the source of truth. This container is a projection of git, not law.
+# Set CANON_MCP_TOKEN in the environment or in the Portainer stack env UI.
+# Never commit the token. Never paste it into this file.
+#
+# Image pin (compose / Portainer): ghcr.io/mattstyles333/canon-mcp:0.1.0
+# Git tag v0.1.0 publishes that stripped semver. An extra :v0.1.0 tag may
+# also exist; pin compose to :0.1.0.
+#
+# Postgres is reserved/unimplemented in v0.1 and is not shipped here.
 
 services:
   mcp:
-    image: python:3.12-slim
-    working_dir: /repo/mcp
-    volumes:
-      - .:/repo
+    image: ghcr.io/mattstyles333/canon-mcp:0.1.0
     ports:
       - "8787:8787"
     environment:
-      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN}
+      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN:?CANON_MCP_TOKEN is required}
       CANON_COMMIT_TOKEN: ${CANON_COMMIT_TOKEN:-}
-      # CANON_POSTGRES_URL is reserved, off by default, unimplemented in v0.1.
-    command:
-      - sh
-      - -c
-      - pip install --quiet -e /repo/mcp && python /repo/mcp/server.py --host 0.0.0.0 --port 8787
-
-  postgres:
-    profiles: ["postgres"]
-    image: postgres:16
-    environment:
-      POSTGRES_USER: canon
-      POSTGRES_DB: canon
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
-    # Optional. Not started by `docker compose up`.
-    # v0.1 does not persist law to Postgres.
+    restart: unless-stopped

@@ -24,12 +24,29 @@ pip install -e ".[dev]"
 python server.py --host 0.0.0.0 --port 8787
 ```
 
-Or with Compose (MCP only; Postgres profile stays off):
+### Run with Docker / Portainer
+
+Production image pin (semver, no `v` prefix):
+`ghcr.io/mattstyles333/canon-mcp:0.1.0`.
+
+Git tag `v0.1.0` publishes that image. Extra tag `:v0.1.0` may exist;
+**compose pins `:0.1.0`**.
 
 ```bash
-# CANON_MCP_TOKEN must already be set in the environment. No default secret.
-docker compose up mcp
+export CANON_MCP_TOKEN=          # required; do not commit a value
+docker compose up -d             # repo-root Portainer stack; port 8787
 ```
+
+Portainer: new stack `canon-mcp`, paste `docker-compose.yml`, set
+`CANON_MCP_TOKEN` in the stack env UI. Never paste the token into the
+committed file.
+
+```bash
+docker pull ghcr.io/mattstyles333/canon-mcp:0.1.0
+```
+
+Developers who want a bind-mount can use `compose.dev.yml` (not for
+production).
 
 The process **refuses to listen** if `CANON_MCP_TOKEN` is unset. That is fail
 closed.
@@ -105,10 +122,8 @@ token into a committed config file.
 Default: the filesystem of `law/` and `decisions/` in this clone.
 
 `CANON_POSTGRES_URL` is reserved, documented here, and **off by default**.
-v0.1 does not implement Postgres. The optional Compose profile `postgres`
-(`docker compose --profile postgres up`) starts `postgres:16` for later
-use; this server does not read it yet. Do not attach a generic Postgres
-MCP to Canon.
+v0.1 does not implement Postgres. The Portainer stack does not ship a
+postgres service. Do not attach a generic Postgres MCP to Canon.
 
 ## Smoke tests
 

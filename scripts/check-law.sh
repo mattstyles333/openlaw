@@ -188,6 +188,19 @@ if [[ -f docker-compose.yml ]] && grep -Eq 'CANON_MCP_TOKEN:-\S' docker-compose.
 elif [[ -f docker-compose.yml ]]; then
   ok "docker-compose.yml has no CANON_MCP_TOKEN default"
 fi
+if [[ -f docker-compose.yml ]]; then
+  if grep -q '5432' docker-compose.yml; then
+    fail "docker-compose.yml must not publish 5432"
+  fi
+  if grep -Eq '^[[:space:]]+postgres:' docker-compose.yml; then
+    fail "docker-compose.yml must not ship a postgres service"
+  fi
+  if ! grep -q 'ghcr.io/mattstyles333/canon-mcp:0.1.0' docker-compose.yml; then
+    fail "docker-compose.yml must pin ghcr.io/mattstyles333/canon-mcp:0.1.0"
+  else
+    ok "docker-compose.yml is GHCR pin :0.1.0 with no postgres/5432"
+  fi
+fi
 
 # 7. CODEOWNERS --------------------------------------------------------
 if [[ -f CODEOWNERS ]]; then

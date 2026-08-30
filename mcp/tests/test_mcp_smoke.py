@@ -100,5 +100,5 @@ def test_shipped_server_has_no_sql_tool_or_auth_bypass() -> None:
     assert "AUTH_DISABLED" not in text
     assert "allow_anonymous" not in text
     compose = COMPOSE.read_text(encoding="utf-8")
-    assert "CANON_MCP_TOKEN: ${CANON_MCP_TOKEN}" in compose
+    assert "${CANON_MCP_TOKEN:?" in compose
     assert "${CANON_MCP_TOKEN:-" not in compose

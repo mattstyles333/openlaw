@@ -1,0 +1,24 @@
+# Development only — not the Portainer stack.
+# Production is docker-compose.yml (GHCR pin ghcr.io/mattstyles333/canon-mcp:0.1.0).
+#
+# Usage from the clone root:
+#   export CANON_MCP_TOKEN=          # required; do not commit a value
+#   docker compose -f compose.dev.yml up
+#
+# Git is the source of truth. MCP is a projection.
+
+services:
+  mcp:
+    image: python:3.12-slim
+    working_dir: /repo
+    volumes:
+      - .:/repo
+    ports:
+      - "8787:8787"
+    environment:
+      CANON_MCP_TOKEN: ${CANON_MCP_TOKEN:?CANON_MCP_TOKEN is required}
+      CANON_COMMIT_TOKEN: ${CANON_COMMIT_TOKEN:-}
+    command:
+      - sh
+      - -c
+      - pip install --quiet -e /repo/mcp && python /repo/mcp/server.py --host 0.0.0.0 --port 8787

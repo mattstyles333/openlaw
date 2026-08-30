@@ -1,0 +1,16 @@
+name: law-check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  law-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run AlwaysLaw gates
+        run: bash scripts/check-law.sh

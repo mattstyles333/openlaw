@@ -1,0 +1,135 @@
+name: agent-security
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# CI is the agent security layer. Agents will rewrite policy if you
+# let them; these gates are how you don't let them.
+jobs:
+  agent-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: CODEOWNERS exists and covers law/ and AGENTS.md
+        run: |
+          test -f CODEOWNERS
+          grep -q 'law/' CODEOWNERS
+          grep -q 'AGENTS.md' CODEOWNERS
+
+      - name: Fail if execute_sql appears under mcp/
+        run: |
+          if [ -d mcp ]; then
+            if grep -R -n --include='*.py' -E 'execute_sql' mcp/; then
+              echo "execute_sql is forbidden under mcp/" >&2
+              exit 1
+            fi
+          fi
+          echo "ok: no execute_sql under mcp/"
+
+      - name: MCP server fail-closed (if present)
+        run: |
+          if [ -f mcp/server.py ]; then
+            grep -Eqi 'bearer' mcp/server.py
+            grep -Eq '401' mcp/server.py
+            grep -Eq 'LAW_COMMIT_TOKEN|LAW_MCP_TOKEN' mcp/server.py
+            grep -Eqi 'fail closed|fail-closed|refuse to listen|fails closed' mcp/server.py
+            if grep -Eqi 'unauthenticated default|allow_anonymous|AUTH_DISABLED' mcp/server.py; then
+              echo "mcp/server.py must not default to unauthenticated" >&2
+              exit 1
+            fi
+            echo "ok: mcp/server.py fail-closed markers present"
+          else
+            echo "mcp/server.py absent; skip"
+          fi
+
+      - name: AGENTS.md size cap (12000 bytes, 80 lines)
+        run: |
+          bytes=$(wc -c < AGENTS.md); bytes=${bytes// /}
+          lines=$(wc -l < AGENTS.md); lines=${lines// /}
+          echo "AGENTS.md: ${bytes} bytes, ${lines} lines"
+          test "$bytes" -le 12000
+          test "$lines" -le 80
+
+      - name: decisions/20*.md frontmatter
+        run: |
+          shopt -s nullglob
+          files=(decisions/20*.md)
+          for f in "${files[@]}"; do
+            grep -q '^date:' "$f"
+            grep -q '^owner:' "$f"
+            grep -Eq '^status:[[:space:]]*(proposed|decided|superseded)[[:space:]]*$' "$f"
+          done
+          echo "ok: decision frontmatter"
+
+      - name: AlwaysLaw gates
+        run: bash scripts/check-law.sh
+
+      - name: Summarize law/ diff on pull requests
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const base = process.env.GITHUB_BASE_REF || '';
+            let diff = '';
+            try {
+              if (base) {
+                execSync(`git fetch origin ${base} --depth=50`, { stdio: 'ignore' });
+                diff = execSync(
+                  `git diff --stat origin/${base}...HEAD -- law AGENTS.md decisions`,
+                  { encoding: 'utf8' }
+                );
+              }
+            } catch (e) {
+              diff = '';
+            }
+            if (!diff.trim()) {
+              try {
+                diff = execSync('git diff --stat HEAD -- law AGENTS.md decisions', { encoding: 'utf8' });
+              } catch (e2) {
+                diff = '';
+              }
+            }
+            if (!diff.trim()) {
+              diff = '(no changes in law/, AGENTS.md, or decisions/)';
+            }
+            const body = [
+              '### AlwaysLaw — law/ diff',
+              '',
+              'CI is the agent security layer. Retrieval is not law.',
+              '',
+              '```',
+              diff.trim(),
+              '```',
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const marker = '### AlwaysLaw — law/ diff';
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

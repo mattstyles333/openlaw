@@ -1,0 +1,78 @@
+# AlwaysLaw GitLab CI — same gates as .github/workflows/
+# so GitLab adopters get the agent security layer too.
+# mcp-test no-ops when mcp/ is absent.
+
+stages:
+  - test
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+law-check:
+  stage: test
+  image: debian:bookworm-slim
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq bash git grep
+  script:
+    - bash scripts/check-law.sh
+
+secret-scan:
+  stage: test
+  image:
+    name: zricethezav/gitleaks:v8.24.2
+    entrypoint: [""]
+  script:
+    - gitleaks detect --source . --verbose --config .gitleaks.toml
+
+mcp-test:
+  stage: test
+  image: python:3.12-slim
+  script:
+    - |
+      if [ ! -d mcp ] || [ ! -f mcp/pyproject.toml ]; then
+        echo "mcp/ not present; skipping smoke tests"
+        exit 0
+      fi
+      python -m pip install --upgrade pip
+      python -m pip install -e "./mcp[dev]" 2>/dev/null || python -m pip install -e ./mcp pytest httpx
+      pytest mcp/tests
+
+agent-security:
+  stage: test
+  image: debian:bookworm-slim
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq bash git grep
+  script:
+    - test -f CODEOWNERS
+    - grep -q 'law/' CODEOWNERS
+    - grep -q 'AGENTS.md' CODEOWNERS
+    - |
+      if [ -d mcp ]; then
+        if grep -R -n --include='*.py' -E 'execute_sql' mcp/; then
+          echo "execute_sql is forbidden under mcp/" >&2
+          exit 1
+        fi
+      fi
+    - |
+      if [ -f mcp/server.py ]; then
+        grep -Eqi 'bearer' mcp/server.py
+        grep -Eq '401' mcp/server.py
+        grep -Eq 'LAW_COMMIT_TOKEN|LAW_MCP_TOKEN' mcp/server.py
+        grep -Eqi 'fail closed|fail-closed|refuse to listen|fails closed' mcp/server.py
+      fi
+    - |
+      bytes=$(wc -c < AGENTS.md); bytes=${bytes// /}
+      lines=$(wc -l < AGENTS.md); lines=${lines// /}
+      echo "AGENTS.md: ${bytes} bytes, ${lines} lines"
+      test "$bytes" -le 12000
+      test "$lines" -le 80
+    - |
+      shopt -s nullglob
+      for f in decisions/20*.md; do
+        grep -q '^date:' "$f"
+        grep -q '^owner:' "$f"
+        grep -Eq '^status:[[:space:]]*(proposed|decided|superseded)[[:space:]]*$' "$f"
+      done
+    - bash scripts/check-law.sh

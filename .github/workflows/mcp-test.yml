@@ -1,0 +1,37 @@
+name: mcp-test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+# Optional MCP is a projection of git. This job no-ops when mcp/ is
+# missing so a law-only checkout (or a sibling PR that has not landed
+# yet) does not fail the tree.
+jobs:
+  mcp-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect mcp/
+        id: mcp
+        run: |
+          if [ -d mcp ] && [ -f mcp/pyproject.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "mcp/ not present; skipping smoke tests"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.mcp.outputs.present == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install and run MCP smoke tests
+        if: steps.mcp.outputs.present == 'true'
+        working-directory: mcp
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" 2>/dev/null || python -m pip install -e . pytest httpx
+          pytest tests

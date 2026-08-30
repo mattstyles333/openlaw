@@ -1,0 +1,29 @@
+# AlwaysLaw gitleaks config.
+# Docs may mention token *names* (bearer, LAW_MCP_TOKEN). Values must still fail.
+title = "AlwaysLaw"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Environment variable NAMES used by optional MCP (not values)"
+regexes = [
+  '''LAW_MCP_TOKEN''',
+  '''LAW_COMMIT_TOKEN''',
+  '''GITHUB_TOKEN''',
+]
+
+[[allowlists]]
+description = "Words 'bearer' and 'token' in markdown and CI are documentation, not secrets"
+paths = [
+  '''(?i)\.md$''',
+  '''(?i)\.yml$''',
+  '''(?i)\.yaml$''',
+  '''(?i)\.toml$''',
+  '''(?i)\.sh$''',
+  '''(?i)\.mdc$''',
+]
+regexes = [
+  '''(?i)\bbearer\b''',
+  '''(?i)\btoken\b''',
+]

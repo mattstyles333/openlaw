@@ -11,10 +11,11 @@
 #   2. AGENTS.md max 12000 bytes
 #   3. AGENTS.md max 80 lines
 #   4. Hard-rule needles in AGENTS.md and law/constraints.md
-#   5. decisions/20*.md frontmatter (date, owner, status)
-#   6. No secret patterns in law/ or AGENTS.md
-#   7. CODEOWNERS covers law/ and AGENTS.md
-#   8. If mcp/server.py exists: fail-closed auth, no execute_sql
+#   5. law/permissions.md ranked list + CODEOWNERS parent merge rule
+#   6. decisions/20*.md frontmatter (date, owner, status)
+#   7. No secret patterns in law/ or AGENTS.md
+#   8. CODEOWNERS covers law/ and AGENTS.md
+#   9. If mcp/server.py exists: fail-closed auth, no execute_sql
 #
 # Usage: bash scripts/check-law.sh   # from repo root, or anywhere inside
 
@@ -68,6 +69,7 @@ REQUIRED=(
   law/brand.md
   law/sor.md
   law/priorities.md
+  law/permissions.md
   decisions/README.md
   decisions/TEMPLATE.md
   decisions/_index.md
@@ -152,7 +154,28 @@ if [[ -f law/constraints.md ]]; then
   fi
 fi
 
-# 5. Decision frontmatter ----------------------------------------------
+# 5. Permissions ranked list (target law/permissions.md only) ----------
+PERM_NEEDLES=(
+  ranked
+  CODEOWNERS
+  parent
+)
+if [[ -f law/permissions.md ]]; then
+  for needle in "${PERM_NEEDLES[@]}"; do
+    if contains law/permissions.md "$needle"; then
+      ok "law/permissions.md has needle: $needle"
+    else
+      fail "law/permissions.md missing needle: $needle"
+    fi
+  done
+  if grep -Eq '^[0-9]+\. ' law/permissions.md; then
+    ok "law/permissions.md has ranked list"
+  else
+    fail "law/permissions.md missing ranked list (numbered items)"
+  fi
+fi
+
+# 6. Decision frontmatter ----------------------------------------------
 shopt -s nullglob
 decision_files=(decisions/20*.md)
 shopt -u nullglob
@@ -174,7 +197,7 @@ else
   done
 fi
 
-# 6. Secret patterns in law/ and AGENTS.md -----------------------------
+# 7. Secret patterns in law/ and AGENTS.md -----------------------------
 # Docs (SECURITY.md, docs/) may name token types. law/ and AGENTS.md may not
 # contain credential *values* or common token prefixes.
 SECRET_PATTERN='API_KEY=|BEGIN RSA PRIVATE KEY|sk-live-|ghp_|gho_|password:'
@@ -204,7 +227,7 @@ if [[ -f docker-compose.yml ]]; then
   fi
 fi
 
-# 7. CODEOWNERS --------------------------------------------------------
+# 8. CODEOWNERS --------------------------------------------------------
 if [[ -f CODEOWNERS ]]; then
   if grep -q 'law/' CODEOWNERS; then
     ok "CODEOWNERS covers law/"
@@ -218,7 +241,7 @@ if [[ -f CODEOWNERS ]]; then
   fi
 fi
 
-# 8. MCP fail-closed (only if mcp/server.py exists) --------------------
+# 9. MCP fail-closed (only if mcp/server.py exists) --------------------
 if [[ -f mcp/server.py ]]; then
   sql_hits=$(grep -R -n --include='*.py' --exclude-dir=.venv --exclude-dir=tests --exclude-dir=__pycache__ --exclude-dir=.pytest_cache -e 'execute_sql' mcp/ 2>/dev/null || true)
   if [[ -n "$sql_hits" ]]; then
@@ -246,9 +269,9 @@ else
   echo "note: mcp/server.py absent; skipping MCP auth gates (projection is optional)"
 fi
 
-# 9. Forbidden product-name tokens (needles live in this script; exclude it).
+# 10. Forbidden product-name tokens (needles live in this script; exclude it).
 #    Phrase "always-on law" is allowed. Hyphenated token always-law is not.
-leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh \
+leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh --exclude=.git \
   'AlwaysLaw|alwayslaw|always-law|[^N]LAW_MCP|\bCanon\b' . 2>/dev/null || true)
 if [[ -n "$leftover_hits" ]]; then
   echo "$leftover_hits" >&2

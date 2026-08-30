@@ -18,8 +18,8 @@ matrix.
 | **Cursor Grok Bot** | Clone the law repo into `/workspace` (or make it the workspace). Bot reads `AGENTS.md` and `.cursor/rules/law.mdc`. | Account-wide HTTP MCP. **Public HTTPS**, not tailnet-only, not stdio, not localhost. See [examples/grok-bot.md](../examples/grok-bot.md). |
 | **Herdr** | Each pane's `cwd` is the law repo (or the product repo that *is* the law fork). `grok --resume` continues the pane. Herdr does not interpret policy. | Same HTTP MCP as any other Grok client, if the pane cannot see git. See [examples/herdr.md](../examples/herdr.md). |
 | **OpenCode** | Loads `AGENTS.md`. | Remote MCP, `oauth: false`, bearer token. See [examples/opencode.md](../examples/opencode.md). |
-| **Claude Code** | Loads `CLAUDE.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. |
-| **Gemini CLI** | Loads `GEMINI.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. |
+| **Claude Code** | Loads `CLAUDE.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. See [examples/claude.md](../examples/claude.md). |
+| **Gemini CLI** | Loads `GEMINI.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. See [examples/gemini.md](../examples/gemini.md). |
 | **Hermes** | Keep `SOUL.md` short. Paste the excerpt from `scripts/excerpt-soul.sh` (~15 lines of hard rules). Do not use `MEMORY.md` as the policy store. Leave `memory.provider` unset unless you *also* want recall — and even then, recall is not law. | Same HTTP MCP + bearer. See [examples/hermes.md](../examples/hermes.md). |
 
 ## Rules that apply to every harness

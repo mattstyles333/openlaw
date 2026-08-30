@@ -76,11 +76,12 @@ def _write(path: Path, text: str) -> None:
 # ---------------------------------------------------------------------------
 
 def mcp_token() -> str:
-    return os.environ.get("CANON_MCP_TOKEN") or ""
+    # Whitespace-only is unset. Fail closed: no default token.
+    return (os.environ.get("CANON_MCP_TOKEN") or "").strip()
 
 
 def commit_token() -> str:
-    return os.environ.get("CANON_COMMIT_TOKEN") or ""
+    return (os.environ.get("CANON_COMMIT_TOKEN") or "").strip()
 
 
 def _bearer_from_request(request: Request) -> str:

@@ -32,8 +32,9 @@ interpret constraints.
 ## Optional MCP
 
 Only if the pane cannot see the working tree (unusual for Herdr).
-Same HTTP + bearer rules as every other harness. Prefer the files on
-disk.
+Same HTTP + bearer rules as every other harness: public HTTPS,
+`CANON_MCP_TOKEN` required on the server, missing bearer is **401**.
+Prefer the files on disk.
 
 ## Checks
 

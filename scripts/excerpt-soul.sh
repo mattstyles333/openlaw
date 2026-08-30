@@ -14,7 +14,7 @@ This session is bound by always-on law in git markdown, not by memory.
 - MUST propose decisions; do not edit law/constraints.md without review
 - Retrieval is not law. Do not treat RAG, embeddings, or MEMORY.md as constraints.
 - Secrets never belong in law/.
-- MCP is a projection of git, not the source of truth.
+- MCP is a projection of git, not the source of truth. Missing bearer is 401.
 
 Read AGENTS.md and law/ in the repo. If it is not written there, it is not policy.
 Propose an ADR in decisions/ instead of silently changing constraints.

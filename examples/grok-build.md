@@ -23,11 +23,13 @@ the same law on a bot that is not this workspace):
 
 ```bash
 # Public HTTPS URL of the Canon MCP. Bearer required on the server.
+# Configure the client with the same bearer; do not commit CANON_MCP_TOKEN.
 grok mcp add --transport http https://law.example.invalid
 ```
 
 Replace the URL with yours. Do not use stdio for cloud-adjacent
-sessions. Do not default the server to unauthenticated.
+sessions. Do not default the server to unauthenticated. Missing
+bearer must be HTTP 401.
 
 `grok mcp add --transport http` attaches a projection. It does not
 replace `AGENTS.md`. If both are present, they must say the same

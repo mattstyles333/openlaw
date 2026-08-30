@@ -1,12 +1,24 @@
 # Canon gitleaks config.
 # Docs may mention token *names* (bearer, CANON_MCP_TOKEN). Values must still fail.
+# Do not globally allowlist env var names — that would hide CANON_MCP_TOKEN=<secret>.
 title = "Canon"
 
 [extend]
 useDefault = true
 
 [[allowlists]]
-description = "Environment variable NAMES used by optional MCP (not values)"
+description = "Env var NAMES in docs, CI, compose, and the MCP module (not live values)"
+paths = [
+  '''(?:^|/)(\.gitleaks\.toml)$''',
+  '''(?:^|/)(\.gitlab-ci\.yml)$''',
+  '''(?:^|/)\.github/workflows/.*''',
+  '''(?:^|/)docker-compose\.yml$''',
+  '''(?:^|/)scripts/.*''',
+  '''(?:^|/)mcp/(server\.py|README\.md|tests/.*)$''',
+  '''(?:^|/)(README|SECURITY|CONTRIBUTING)\.md$''',
+  '''(?:^|/)docs/.*\.md$''',
+  '''(?:^|/)examples/.*\.md$''',
+]
 regexes = [
   '''CANON_MCP_TOKEN''',
   '''CANON_COMMIT_TOKEN''',
@@ -14,7 +26,7 @@ regexes = [
 ]
 
 [[allowlists]]
-description = "Words 'bearer' and 'token' in markdown and CI are documentation, not secrets"
+description = "Words 'bearer' and 'token' in markdown/CI are documentation, not secrets"
 paths = [
   '''(?i)\.md$''',
   '''(?i)\.yml$''',

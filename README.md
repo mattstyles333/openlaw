@@ -86,8 +86,8 @@ You do not need a new runtime.
 | Cursor Grok Bot | clone into `/workspace` | account-wide HTTP MCP (public HTTPS) |
 | Herdr | pane `cwd` = repo; `grok --resume` | multiplexer, not a brain |
 | OpenCode | `AGENTS.md` | remote MCP, oauth false + bearer |
-| Claude Code | `CLAUDE.md` → `AGENTS.md` | same HTTP MCP |
-| Gemini CLI | `GEMINI.md` → `AGENTS.md` | same HTTP MCP |
+| Claude Code | `CLAUDE.md` → `AGENTS.md` | same HTTP MCP; [examples/claude.md](examples/claude.md) |
+| Gemini CLI | `GEMINI.md` → `AGENTS.md` | same HTTP MCP; [examples/gemini.md](examples/gemini.md) |
 | Hermes | short `SOUL.md` excerpt | same MCP; leave `memory.provider` unset |
 
 Details: [docs/HARNESS.md](docs/HARNESS.md) and [examples/](examples/).

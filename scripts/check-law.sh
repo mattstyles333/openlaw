@@ -74,6 +74,13 @@ REQUIRED=(
   docs/WHY.md
   docs/SECURITY-MODEL.md
   docs/HARNESS.md
+  examples/grok-bot.md
+  examples/grok-build.md
+  examples/herdr.md
+  examples/hermes.md
+  examples/opencode.md
+  examples/claude.md
+  examples/gemini.md
 )
 for f in "${REQUIRED[@]}"; do
   if [[ -f "$f" ]]; then
@@ -169,12 +176,17 @@ fi
 # Docs (SECURITY.md, docs/) may name token types. law/ and AGENTS.md may not
 # contain credential *values* or common token prefixes.
 SECRET_PATTERN='API_KEY=|BEGIN RSA PRIVATE KEY|sk-live-|ghp_|gho_|password:'
-secret_hits=$(grep -R -n -E -- "$SECRET_PATTERN" law AGENTS.md 2>/dev/null || true)
+secret_hits=$(grep -R -n -E -- "$SECRET_PATTERN" law AGENTS.md decisions examples 2>/dev/null || true)
 if [[ -n "$secret_hits" ]]; then
   echo "$secret_hits" >&2
-  fail "secret-like pattern in law/ or AGENTS.md (API_KEY=, BEGIN RSA PRIVATE KEY, sk-live-, ghp_, gho_, password:)"
+  fail "secret-like pattern in law/, AGENTS.md, decisions/, or examples/ (API_KEY=, BEGIN RSA PRIVATE KEY, sk-live-, ghp_, gho_, password:)"
 else
-  ok "no secret patterns in law/ or AGENTS.md"
+  ok "no secret patterns in law/, AGENTS.md, decisions/, or examples/"
+fi
+if [[ -f docker-compose.yml ]] && grep -Eq 'CANON_MCP_TOKEN:-\S' docker-compose.yml; then
+  fail "docker-compose.yml must not default CANON_MCP_TOKEN (no fallback secret)"
+elif [[ -f docker-compose.yml ]]; then
+  ok "docker-compose.yml has no CANON_MCP_TOKEN default"
 fi
 
 # 7. CODEOWNERS --------------------------------------------------------
@@ -193,10 +205,12 @@ fi
 
 # 8. MCP fail-closed (only if mcp/server.py exists) --------------------
 if [[ -f mcp/server.py ]]; then
-  if grep -q 'execute_sql' mcp/server.py; then
-    fail "mcp/server.py contains execute_sql (forbidden)"
+  sql_hits=$(grep -R -n --include='*.py' --exclude-dir=.venv --exclude-dir=tests --exclude-dir=__pycache__ --exclude-dir=.pytest_cache -e 'execute_sql' mcp/ 2>/dev/null || true)
+  if [[ -n "$sql_hits" ]]; then
+    echo "$sql_hits" >&2
+    fail "execute_sql is forbidden under mcp/ (shipped code, not tests)"
   else
-    ok "mcp/server.py has no execute_sql"
+    ok "mcp/ shipped python has no execute_sql"
   fi
   if grep -Eqi 'unauthenticated default|allow_anonymous|auth.*=.*none|AUTH_DISABLED' mcp/server.py; then
     fail "mcp/server.py looks like it defaults to unauthenticated"
@@ -215,6 +229,17 @@ if [[ -f mcp/server.py ]]; then
   fi
 else
   echo "note: mcp/server.py absent; skipping MCP auth gates (projection is optional)"
+fi
+
+# 9. Rename leftovers (needles live in this script; exclude it from the scan)
+#    Clone directory name is not searched. Phrase "always-on law" is allowed.
+leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude=check-law.sh \
+  'AlwaysLaw|alwayslaw|LAW_MCP' . 2>/dev/null || true)
+if [[ -n "$leftover_hits" ]]; then
+  echo "$leftover_hits" >&2
+  fail "rename leftover (old product name or LAW_MCP*) in public tree"
+else
+  ok "no rename leftovers in public tree"
 fi
 
 echo

@@ -6,10 +6,14 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --test tests/gather-ops.test.mjs",
+    "test:built": "node --test tests/assert-built-ops.test.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.34.4",
-    "astro": "^5.10.1"
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "^5.10.1",
+    "tailwindcss": "4.3.3"
   }
 }

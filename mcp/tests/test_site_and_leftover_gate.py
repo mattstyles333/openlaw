@@ -38,9 +38,9 @@ def test_site_is_astro_starlight_with_openlaw_base() -> None:
     assert "base: '/openlaw/'" in cfg
     assert "mattstyles333.github.io" in cfg
     home = (SITE / "src" / "pages" / "index.astro").read_text(encoding="utf-8")
-    assert "canon-hero.png" in home
-    assert "canon-mark.png" in home
-    assert "canon-og.png" in home
+    assert "openlaw-hero.png" in home
+    assert "openlaw-mark.png" in home
+    assert "openlaw-og.png" in home
     docs = SITE / "src" / "content" / "docs" / "docs"
     for name in (
         "index.mdx",

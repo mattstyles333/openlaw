@@ -9,7 +9,7 @@ export default defineConfig({
       title: 'Openlaw',
       description:
         'Always-on law for AI agents. Git markdown. Never retrieved.',
-      favicon: '/canon-mark.png',
+      favicon: '/openlaw-mark.png',
       customCss: ['./src/styles/openlaw.css'],
       social: [
         {
@@ -37,14 +37,14 @@ export default defineConfig({
           tag: 'meta',
           attrs: {
             property: 'og:image',
-            content: 'https://mattstyles333.github.io/openlaw/canon-og.png',
+            content: 'https://mattstyles333.github.io/openlaw/openlaw-og.png',
           },
         },
         {
           tag: 'link',
           attrs: {
             rel: 'icon',
-            href: '/openlaw/canon-mark.png',
+            href: '/openlaw/openlaw-mark.png',
             type: 'image/png',
           },
         },

@@ -44,7 +44,7 @@ def test_homepage_first_viewport_same_aha() -> None:
     assert "always-on law" in low
     assert "git markdown" in low
     assert "ci" in low
-    assert "canon-hero.png" in text
+    assert "openlaw-hero.png" in text
     assert "not a brain" in low
     assert "memory saas" in low
 

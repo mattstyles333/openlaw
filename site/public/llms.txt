@@ -12,9 +12,9 @@ Install Openlaw as always-on law. Open source, MIT, self-hosted. Not a memory Sa
 5. You are done when bash scripts/check-law.sh exits 0.
 ```
 
-Always-on law for AI agents. Short git markdown in context every session, locked by CI. Open source. MIT. Free forever. Self-hosted. Local-first. No SaaS. No vendor lock-in.
+Always-on law for AI agents. Git markdown. Every session. CI is the lock. Open source. MIT. Free forever. Self-hosted. Fork it.
 
-Memory products retrieve similar chunks and hope the agent obeys. Openlaw does not retrieve law. If it is not in git, it is not policy. Optional MCP is an HTTP projection of git, not a brain.
+Memory retrieves a neighbour and hopes. Openlaw does not retrieve law. If it is not in git, it is not policy. Optional MCP is a projection of git, not a brain.
 
 Teaching example: fictional Northwind Coffee. Replace `law/` on fork.
 

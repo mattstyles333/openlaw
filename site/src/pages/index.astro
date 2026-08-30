@@ -10,17 +10,17 @@ const docs = `${base}docs/`;
     <title>Openlaw — always-on law</title>
     <meta
       name="description"
-      content="Memory products retrieve similar chunks and hope. Openlaw is always-on law: git markdown every session, locked by CI. Open source. MIT. Self-hosted."
+      content="Memory retrieves a neighbour and hopes. Openlaw is always-on law. Git markdown. Every session. CI is the lock."
     />
-    <link rel="icon" href={`${base}canon-mark.png`} type="image/png" />
+    <link rel="icon" href={`${base}openlaw-mark.png`} type="image/png" />
     <meta property="og:title" content="Openlaw" />
     <meta
       property="og:description"
-      content="Always-on law for AI agents. Git markdown. Never retrieved. Open source. MIT. Free forever."
+      content="Always-on law. Git markdown. Git is the lock. Open source. MIT. Free forever. Self-hosted."
     />
     <meta
       property="og:image"
-      content="https://mattstyles333.github.io/openlaw/canon-og.png"
+      content="https://mattstyles333.github.io/openlaw/openlaw-og.png"
     />
     <style is:global>
       @import "../styles/openlaw.css";
@@ -29,7 +29,10 @@ const docs = `${base}docs/`;
   <body class="hero-page">
     <div class="hero-wrap">
       <nav class="hero-nav">
-        <a class="mark" href={base}>Openlaw</a>
+        <a class="mark" href={base}>
+          <img src={`${base}openlaw-mark.png`} alt="" width="28" height="28" />
+          Openlaw
+        </a>
         <span>
           <a href={docs}>Docs</a>
           &nbsp;·&nbsp;
@@ -43,49 +46,36 @@ const docs = `${base}docs/`;
 
       <section class="hero-stage">
         <div>
-          <p class="kicker">Open source · MIT · self-hosted · no SaaS</p>
-          <h1>Always-on law.</h1>
+          <p class="kicker">Law, not memory</p>
+          <h1>Always on.</h1>
           <p class="lede">
-            Memory products retrieve similar chunks and hope the agent obeys.
-            Openlaw is always-on law: short git markdown in context every
-            session, locked by CI. If it is not in git, it is not policy.
-            Optional MCP is an HTTP projection of git, not a brain. Not a
-            memory SaaS. Not a new agent OS. Free forever. Local-first. No
-            vendor lock-in. Self host it.
+            Memory retrieves a neighbour and hopes. Openlaw is always-on law:
+            git markdown, every session. CI is the lock. Not a memory SaaS.
+            Not a brain. Fork it. Free forever. Self-hosted. Self host it.
+            Open source.
           </p>
           <div class="cta-row">
-            <a class="cta" href={`${docs}onboarding/`}>Onboarding</a>
+            <a class="cta" href={`${docs}onboarding/`}>Install</a>
             <a class="cta ghost" href={docs}>Read the docs</a>
           </div>
         </div>
         <div class="hero-visual">
-          <img src={`${base}canon-hero.png`} alt="Openlaw" />
+          <img src={`${base}openlaw-hero.png`} alt="Openlaw" />
         </div>
       </section>
 
       <section class="rules">
         <div>
-          <h2>Not retrieval</h2>
-          <p>
-            Similarity search is not a constraint. Always-on law loads every
-            session from <code>AGENTS.md</code>. If it is not in git, it is
-            not policy.
-          </p>
+          <h2>Law, not memory</h2>
+          <p>Always on. In the prompt. Every session. Retrieval is not a constraint.</p>
         </div>
         <div>
-          <h2>Fork, then replace</h2>
-          <p>
-            Northwind Coffee is a teaching example. Your organisation’s law
-            lives in <code>law/</code>. Keep <code>AGENTS.md</code> under 80
-            lines.
-          </p>
+          <h2>Git is the lock</h2>
+          <p>If it is not in git, it is not policy. CI fails the rewrite. Fork it.</p>
         </div>
         <div>
-          <h2>CI is the lock</h2>
-          <p>
-            Agents rewrite policy if you let them. GitHub Actions and
-            <code>check-law.sh</code> are the security layer. Not a prompt.
-          </p>
+          <h2>Free forever</h2>
+          <p>Open source. MIT. Self-hosted. No SaaS. No vendor lock-in.</p>
         </div>
       </section>
 
@@ -160,9 +150,6 @@ const docs = `${base}docs/`;
 4. You are done when bash scripts/check-law.sh exits 0.</pre>
           </details>
         </div>
-        <p class="lede" style="margin-top:1.25rem;margin-bottom:0;">
-          Starlight copy buttons live on <a href={`${docs}onboarding/`}>onboarding</a>.
-        </p>
       </section>
       <script is:inline>
         document.querySelectorAll("[data-copy]").forEach((btn) => {

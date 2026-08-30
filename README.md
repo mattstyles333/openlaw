@@ -2,13 +2,13 @@
 
 > Paste this into your coding agent to install Openlaw as always-on law.
 
-Memory products retrieve similar chunks and hope the agent obeys. Openlaw is **always-on law**: short git markdown in context every session, locked by CI. If it is not in git, it is not policy.
+Memory retrieves a neighbour and hopes. Openlaw is **always-on law**. Git markdown. Every session. CI is the lock. If it is not in git, it is not policy.
 
-Open source. MIT. Free forever. Self-hosted, local-first. Self host it. No SaaS. No vendor lock-in.
+Open source. MIT. Free forever. Self-hosted. Fork it.
 
-Not a memory SaaS. Not a new agent OS. Optional MCP is an HTTP projection of git, not a brain. Law lives in `AGENTS.md`.
+Not a memory SaaS. Not a new agent OS. Optional MCP is a projection of git, not a brain.
 
-Fork it. Replace `law/`. Teaching example: fictional **Northwind Coffee**.
+Teaching example: fictional **Northwind Coffee**. Replace `law/`.
 
 Website: [mattstyles333.github.io/openlaw](https://mattstyles333.github.io/openlaw/) ·
 [Onboarding](https://mattstyles333.github.io/openlaw/docs/onboarding/) ·
@@ -126,7 +126,7 @@ cd mcp && python -m pytest tests
 On push/PR: **law-check**, **secret-scan**, **agent-security**, **mcp-test**.  
 On tag `v*`: GHCR image. On push to `main`: GitHub Pages.
 
-Agents will rewrite policy if you let them. CI is how you do not.
+Agents rewrite policy if you let them. CI is how you do not.
 
 ## Docker / Portainer
 
@@ -176,7 +176,7 @@ mcp/                      optional HTTP projection
 llms.txt                  what it is / is not / 3-step onboard
 site/                     Astro + Starlight (GitHub Pages)
 Dockerfile                production MCP image
-docker-compose.yml        Portainer stack, GHCR :0.1.0
+docker-compose.yml        Portainer stack, live pin :0.1.0
 scripts/check-law.sh      local CI
 scripts/reset-onboarding.sh   restore Northwind; print harness wipes
 ```

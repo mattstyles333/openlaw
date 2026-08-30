@@ -1,0 +1,28 @@
+# Canon
+
+Always-on law for AI agents. Short git markdown in context every session, locked by CI. Open source. MIT. Free forever. Self-hosted. Local-first. No SaaS. No vendor lock-in.
+
+Memory products retrieve similar chunks and hope the agent obeys. Canon does not retrieve law. If it is not in git, it is not policy. Optional MCP is an HTTP projection of git, not a brain.
+
+Teaching example: fictional Northwind Coffee. Replace `law/` on fork.
+
+## What it is
+
+- Always-on law in `AGENTS.md` + `law/` (git markdown).
+- CI (`scripts/check-law.sh`, GitHub Actions) as the lock.
+- Optional self-hosted MCP: pin `ghcr.io/mattstyles333/canon-mcp:0.1.0`, token `CANON_MCP_TOKEN` (never commit it).
+
+## What it is not
+
+- Not a memory SaaS.
+- Not a vector store.
+- Not a new agent OS.
+- Not retrieval. Similarity search is not a constraint.
+
+## 3-step onboard
+
+1. Clone or fork https://github.com/mattstyles333/canon — replace `law/`; keep three hard rules inlined in `AGENTS.md` (max 80 lines / 12 KB).
+2. Turn on CI: `bash scripts/check-law.sh` and GitHub Actions (law-check, secret-scan, agent-security, mcp-test).
+3. Attach the harness you already run (Herdr / Grok Build, Cursor Grok Bot, Hermes, OpenCode). Optional Portainer/compose MCP. Wipe a session with `bash scripts/reset-onboarding.sh` then re-read git.
+
+Full attach: https://mattstyles333.github.io/canon/docs/onboarding/

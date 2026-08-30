@@ -35,6 +35,13 @@ bearer must be HTTP 401.
 replace `AGENTS.md`. If both are present, they must say the same
 thing because they are the same files.
 
+## Wipe / start fresh
+
+```bash
+bash scripts/reset-onboarding.sh
+# New Grok Build session / new /goal in this repo. Do not resume an old thread.
+```
+
 ## Checks
 
 - The agent, on a fresh session, can state the three hard rules

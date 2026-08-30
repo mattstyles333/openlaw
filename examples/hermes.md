@@ -32,6 +32,12 @@ Same HTTP + bearer as every other harness. Useful when Hermes is
 hosted and cannot see the clone. Public HTTPS for cloud;
 `CANON_MCP_TOKEN` required on the server; HTTP 401 without bearer.
 
+## Wipe / start fresh
+
+New Hermes session. Leave `memory.provider` **unset**. Remove or
+ignore `MEMORY.md`. Re-paste `bash scripts/excerpt-soul.sh` into
+`SOUL.md`. Run `bash scripts/reset-onboarding.sh` on the clone.
+
 ## Checks
 
 - `SOUL.md` contains the excerpt and is still short.

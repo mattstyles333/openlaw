@@ -36,6 +36,21 @@ matrix.
 5. **CI stays on.** A harness attach that works locally and then lets
    an agent merge unsigned `law/` changes is not attached.
 
+## Restart from zero
+
+Wipe the *harness session*. Law stays in git. Then re-read `AGENTS.md`.
+
+```bash
+bash scripts/reset-onboarding.sh
+```
+
+| Harness | Wipe |
+| --- | --- |
+| Herdr / Grok Build | New pane, cwd = repo, or a new `/goal`. Do not `grok --resume` for a blank agent. |
+| Cursor Grok Bot | New Bot thread. Delete Memories that look like policy. |
+| Hermes | New session. `memory.provider` unset. Ignore `MEMORY.md`. |
+| OpenCode | New session in this directory. No knowledge-base as policy. |
+
 ## What "loads" means
 
 Always-on means the harness puts `AGENTS.md` (and, via that file,

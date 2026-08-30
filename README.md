@@ -1,19 +1,17 @@
 # Canon
 
-**Always-on law for AI agents. Git markdown. Never retrieved.**
+Memory products retrieve similar chunks and hope the agent obeys. Canon is **always-on law**: short git markdown in context every session, locked by CI. If it is not in git, it is not policy.
 
-Law, not memory. Not a runtime. Not a SaaS.
+Open source. MIT. Free forever. Self-hosted, local-first. Self host it. No SaaS. No vendor lock-in.
 
-Fork it. Replace `law/`. Keep `AGENTS.md` short. Turn on CI — that is the lock. Optional MCP is a projection of git, not the source of truth.
+Not a memory SaaS. Not a new agent OS. Optional MCP is an HTTP projection of git, not a brain. Law lives in `AGENTS.md`.
+
+Fork it. Replace `law/`. Teaching example: fictional **Northwind Coffee**.
 
 Website: [mattstyles333.github.io/canon](https://mattstyles333.github.io/canon/) ·
 [Onboarding](https://mattstyles333.github.io/canon/docs/onboarding/) ·
-[Why](docs/WHY.md) ·
-[Security](docs/SECURITY-MODEL.md) ·
-[Harness](docs/HARNESS.md) ·
+[llms.txt](llms.txt) ·
 [MIT](LICENSE)
-
-The teaching example is **Northwind Coffee** (fictional). Replace it.
 
 ## Quickstart
 
@@ -32,7 +30,9 @@ Hard rules (template — replace the needles in `scripts/check-law.sh` on fork):
 
 Specialists propose ADRs in `decisions/` (`status: proposed`). Owners in `CODEOWNERS` merge. Do not silently edit `law/constraints.md`.
 
-## CI gates
+Docs-only attach (Herdr, Grok Build, Cursor Grok Bot, Hermes, OpenCode, Portainer, GitHub Actions): [onboarding](https://mattstyles333.github.io/canon/docs/onboarding/).
+
+## CI is the lock
 
 ```bash
 bash scripts/check-law.sh
@@ -54,6 +54,16 @@ docker compose up -d             # stack file; port 8787
 ```
 
 Portainer: stack name `canon-mcp`, paste `docker-compose.yml`, set `CANON_MCP_TOKEN` in the UI. Missing token fails closed. No postgres service. No bind-mount.
+
+## Restart from zero
+
+Law is git, not a vector store. Wipe the *harness session*, then re-read `AGENTS.md` from disk.
+
+```bash
+bash scripts/reset-onboarding.sh
+```
+
+That restores teaching Northwind law and prints wipe commands for Herdr / Grok Build, Cursor Grok Bot, Hermes, and OpenCode.
 
 ## Harness attach
 
@@ -78,12 +88,14 @@ AGENTS.md                 always-on law (max 80 lines / 12 KB)
 law/                      constraints, brand, SoR, priorities (Northwind)
 decisions/                ADRs
 mcp/                      optional HTTP projection
+llms.txt                  what it is / is not / 3-step onboard
 site/                     Astro + Starlight (GitHub Pages)
 Dockerfile                production MCP image
 docker-compose.yml        Portainer stack, GHCR :0.1.0
 scripts/check-law.sh      local CI
+scripts/reset-onboarding.sh   restore Northwind; print harness wipes
 ```
 
 ## License
 
-[MIT](LICENSE) © 2026 Canon contributors.
+[MIT](LICENSE) © 2026 Canon contributors. Open source. Free forever.

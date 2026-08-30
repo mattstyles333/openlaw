@@ -81,6 +81,8 @@ REQUIRED=(
   examples/opencode.md
   examples/claude.md
   examples/gemini.md
+  llms.txt
+  scripts/reset-onboarding.sh
 )
 for f in "${REQUIRED[@]}"; do
   if [[ -f "$f" ]]; then

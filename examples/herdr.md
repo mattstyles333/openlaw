@@ -36,8 +36,21 @@ Same HTTP + bearer rules as every other harness: public HTTPS,
 `CANON_MCP_TOKEN` required on the server, missing bearer is **401**.
 Prefer the files on disk.
 
+## Wipe / start fresh
+
+Law stays in git. Wipe the *pane* so the agent is blank, then re-read
+`AGENTS.md`.
+
+```bash
+bash scripts/reset-onboarding.sh
+# New Herdr pane, cwd = this repo, or a new /goal.
+# Do not grok --resume if you want a blank agent.
+```
+
 ## Checks
 
 - Two panes on the same repo quote the same hard rules.
 - A resume after restart still has `AGENTS.md`; you did not have to
   "remind" Herdr of policy.
+- After wipe + new pane / new `/goal`, the three hard rules load from
+  git without a reminder.

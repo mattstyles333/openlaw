@@ -31,6 +31,13 @@ If the Bot must read law from a canonical repo it did not clone:
 Cloud agents that cannot present a bearer should not get a
 fail-open fallback. They should get 401.
 
+## Wipe / start fresh
+
+Start a **new Bot thread**. Delete Cursor Memories that look like
+policy. Re-clone this repo into `/workspace` if the workspace drifted.
+Then `bash scripts/reset-onboarding.sh` on the law clone (restores
+Northwind teaching files) and let the Bot re-read `AGENTS.md`.
+
 ## Checks
 
 - Bot can quote a hard rule from `AGENTS.md` without calling a search

@@ -25,8 +25,29 @@ Remote MCP, OAuth off, bearer on:
 - Fail closed: missing bearer is 401, not "anonymous read".
 
 Exact OpenCode config keys move between releases; the invariant is
-**remote HTTP + bearer, oauth false**. Do not paste the token into a
-committed `opencode.json`.
+**remote HTTP + bearer, oauth false**. Example shape (do not commit a
+live token):
+
+```json
+{
+  "mcp": {
+    "canon": {
+      "type": "remote",
+      "url": "https://law.example.invalid",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer set-CANON_MCP_TOKEN-in-the-environment-not-in-git"
+      }
+    }
+  }
+}
+```
+
+## Wipe / start fresh
+
+New OpenCode session in this directory. Do not load a knowledge-base
+as policy. `bash scripts/reset-onboarding.sh` restores teaching
+Northwind on disk.
 
 ## Checks
 

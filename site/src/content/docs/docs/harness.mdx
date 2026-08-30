@@ -29,4 +29,12 @@ Worked recipes live in `examples/` in the repo.
 4. Do not index `law/` into a vector store. Retrieved-when-similar is not law.
 5. CI stays on. An attach that lets an agent merge unsigned `law/` is not attached.
 
+## Restart from zero
+
+```bash
+bash scripts/reset-onboarding.sh
+```
+
+Wipe the harness (new Herdr pane / new `/goal`, new Grok Bot thread, new Hermes session with `memory.provider` unset, new OpenCode session). Then re-read git. Law is not a vector store.
+
 Canonical long form: [`docs/HARNESS.md`](https://github.com/mattstyles333/canon/blob/main/docs/HARNESS.md).

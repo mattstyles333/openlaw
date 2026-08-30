@@ -23,3 +23,7 @@ markdown, never retrieved. This is law, not memory SaaS. Example law is
 - Website: Astro + Starlight on GitHub Pages at
   `https://mattstyles333.github.io/canon/` (Home, Why, Onboarding,
   Harness, Security, MCP/Portainer, Status).
+- `llms.txt` (repo root and Pages) — what Canon is, what it is not,
+  3-step onboard. Docs-only attach for Herdr, Grok Build, Cursor Grok
+  Bot, Hermes, OpenCode, Portainer, GitHub Actions. Restart from zero:
+  `scripts/reset-onboarding.sh`.

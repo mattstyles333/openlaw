@@ -19,6 +19,7 @@ LEARNING = ROOT / "docs" / "LEARNING.md"
 ADR = ROOT / "decisions" / "2026-08-30-propose-merge.md"
 PR_TEMPLATE = ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md"
 GITKEEP = PROPOSED_DIR / ".gitkeep"
+PR_LAW_REVIEW = ROOT / ".github" / "workflows" / "pr-law-review.yml"
 
 _WROTE = re.compile(r"^Wrote (\S+)", re.M)
 
@@ -66,6 +67,15 @@ def test_learning_loop_artifacts_exist_with_needles() -> None:
     assert re.search(r"^date:", adr, re.M)
     assert re.search(r"^owner:", adr, re.M)
     assert re.search(r"^status:\s*(proposed|decided|superseded)\s*$", adr, re.M)
+    low_learning = learning.lower()
+    assert "discussion room" in low_learning
+    assert "silent" in low_learning
+    assert "github" in low_learning
+    assert "pull request" in low_learning
+    assert "webhook" in low_learning
+    assert "pr-law-review.yml" in learning
+    assert "onboarding" in low_learning
+    assert "fail soft" in low_learning
 
 
 def test_propose_sh_copies_template_and_prints_next_steps() -> None:
@@ -127,6 +137,25 @@ def test_propose_sh_second_run_with_same_slug_writes_another_file() -> None:
         for path in created:
             if path.exists():
                 path.unlink()
+
+
+def test_pr_law_review_workflow_runs_check_law_and_fail_soft_comment() -> None:
+    assert PR_LAW_REVIEW.is_file()
+    text = PR_LAW_REVIEW.read_text(encoding="utf-8")
+    assert "pull_request:" in text
+    assert "scripts/check-law.sh" in text
+    assert "actions/github-script@" in text
+    assert "continue-on-error: true" in text
+    assert "fail soft" in text.lower()
+    assert "pull-requests: write" in text
+    assert "never auto-merge law" in text.lower()
+    assert "gh pr merge" not in text
+    assert "pulls.merge" not in text
+    assert "API_KEY=" not in text
+    assert "sk-live-" not in text
+    assert "ghp_" not in text
+    assert "gho_" not in text
+    assert "password:" not in text
 
 
 def test_propose_sh_source_is_offline_and_has_no_secrets() -> None:

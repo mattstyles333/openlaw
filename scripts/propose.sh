@@ -74,8 +74,8 @@ echo
 echo "Next steps:"
 cat <<'EOF'
   1. Fill Context, Decision, and Consequences in the new file.
-  2. Open a pull request. Mark it as a proposal vs law change.
-  3. Do not edit law/ or AGENTS.md in this PR.
+  2. Open a GitHub pull request. The PR is the discussion room, not a silent write to law/.
+  3. Mark it as a proposal vs law change. Do not edit law/ or AGENTS.md in this PR.
   4. Only CODEOWNERS review and merge to law/ or AGENTS.md.
   5. Never auto-merge law. A proposed ADR is not binding.
 

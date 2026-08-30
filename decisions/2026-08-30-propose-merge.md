@@ -24,9 +24,14 @@ The learning loop is **propose → review → merge**:
 
 - Any harness may propose an ADR or skill under `decisions/proposed/`
   (or under `decisions/` with `status: proposed`).
+- Every harness proposes via a **GitHub PR**. The pull request is the
+  discussion room. Silent file writes to `law/` are not a proposal.
 - `scripts/propose.sh` copies `decisions/_template.md` and prints next
   steps. It is offline. It does not write `law/` or `AGENTS.md`.
-- Review is CODEOWNERS on a pull request. CI does not decide policy.
+- Pairing: `.github/workflows/pr-law-review.yml` runs `check-law.sh` on
+  `pull_request` and comments suggested improvements (fail soft if it
+  cannot comment). Optional harness webhook, where supported, watches
+  that same PR. Neither half merges.
 - Only CODEOWNERS merge to `law/` or `AGENTS.md`. Never auto-merge law.
 
 See `docs/LEARNING.md`.

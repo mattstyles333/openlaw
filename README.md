@@ -99,17 +99,24 @@ bash scripts/excerpt-soul.sh
 
 ## Optional MCP
 
-MCP is **optional** and **not the source of truth**. When present it is a
-thin HTTP projection of `law/` and `decisions/` with bearer auth that
-**fails closed** (no unauthenticated default). Cloud agents need public
-HTTPS — not tailnet-only, not stdio, not localhost.
+MCP is **optional** and **not the source of truth**. `mcp/` is a thin HTTP
+projection of `law/` and `decisions/` with bearer auth that **fails closed**
+(no unauthenticated default). Cloud agents need public HTTPS — not
+tailnet-only, not stdio, not localhost.
 
-Owner tools (`commit_decision`, `set_priorities`) require a separate
-commit token. There is no `execute_sql`. Postgres, if ever enabled, is
-opt-in and off by default.
+`LAW_MCP_TOKEN` is required. The process refuses to listen if it is unset.
+Owner tools (`commit_decision`, `set_priorities`) also need
+`LAW_COMMIT_TOKEN`. There is no `execute_sql`. Postgres is an opt-in
+Compose profile and stays off by default.
 
-If `mcp/` is missing in this checkout, a sibling change may still be
-landing it. CI's `mcp-test` job no-ops until that directory exists.
+```bash
+export LAW_MCP_TOKEN=          # required; no default secret
+docker compose up mcp          # listens on 8787
+
+cd mcp && python -m pip install -e ".[dev]" && pytest tests
+```
+
+Details: [mcp/README.md](mcp/README.md). [v0.1 status](docs/STATUS.md).
 
 ## Layout
 
@@ -119,10 +126,12 @@ CLAUDE.md / GEMINI.md     one-line pointers
 .cursor/rules/law.mdc     pointer only
 law/                      constraints, brand, SoR, priorities
 decisions/                ADRs (propose; owners merge)
+mcp/                      optional HTTP projection of git
 docs/                     why, security model, harness matrix
 examples/                 attach recipes per harness
 scripts/check-law.sh      local CI
 scripts/excerpt-soul.sh   Hermes SOUL.md hard-rule block
+docker-compose.yml        MCP on 8787; postgres profile off
 ```
 
 ## Local CI
@@ -132,8 +141,8 @@ bash scripts/check-law.sh
 ```
 
 GitHub Actions and GitLab CI run the same gates on push and pull
-request: law-check, secret-scan, agent-security, and mcp-test (skipped
-when `mcp/` is absent).
+request: law-check, secret-scan, agent-security, and mcp-test.
+See [docs/STATUS.md](docs/STATUS.md).
 
 ## License
 

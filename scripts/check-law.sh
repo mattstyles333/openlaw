@@ -248,7 +248,7 @@ fi
 
 # 9. Forbidden product-name tokens (needles live in this script; exclude it).
 #    Phrase "always-on law" is allowed. Hyphenated token always-law is not.
-leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh \
+leftover_hits=$(grep -RIn -E --exclude-dir=.git --exclude-dir=.venv --exclude-dir=__pycache__ --exclude-dir=.pytest_cache --exclude-dir='*.egg-info' --exclude-dir=node_modules --exclude-dir=dist --exclude=check-law.sh --exclude=.git \
   'AlwaysLaw|alwayslaw|always-law|[^N]LAW_MCP|\bCanon\b' . 2>/dev/null || true)
 if [[ -n "$leftover_hits" ]]; then
   echo "$leftover_hits" >&2

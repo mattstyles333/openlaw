@@ -16,6 +16,14 @@ layer. Secrets never enter the repo. MCP, when present, fails closed.
 The owner writes law in git. That is the only write path that becomes
 binding. Everything else is a proposal or a projection.
 
+## Harness rank
+
+Authority is a **ranked list**, not a dashboard role. See
+[`law/permissions.md`](../law/permissions.md). Higher rank = more
+authority. Top ranks may merge; merge is still **CODEOWNERS / human**.
+Lower ranks read + propose only via PR. Agents never auto-merge `law/`
+or `AGENTS.md`. OpenClaw is a stub.
+
 ## CI is the agent security layer
 
 Language-model instructions are not a control. Agents will rewrite
@@ -32,10 +40,12 @@ The controls are:
 4. **Secret patterns** rejected in `law/` and `AGENTS.md`. Docs such as
    this file and `SECURITY.md` may *name* token variables.
 5. **CODEOWNERS** must cover `law/` and `AGENTS.md`.
-6. **MCP fail-closed**: if `mcp/server.py` exists, it must require
+6. **Permissions ranked list**: `law/permissions.md` must exist, list
+   harnesses in rank order, and state the CODEOWNERS parent merge rule.
+7. **MCP fail-closed**: if `mcp/server.py` exists, it must require
    bearer / 401 / `CANON_COMMIT_TOKEN` language and must not contain
    `execute_sql` or default to unauthenticated.
-7. **Gitleaks** (or equivalent) on every push and pull request.
+8. **Gitleaks** (or equivalent) on every push and pull request.
 
 GitHub Actions and GitLab CI run the same gates. Fork, turn them on,
 do not delete them to "unblock" an agent.

@@ -8,7 +8,10 @@ Git is the source of truth. MCP is a projection. Herdr is a
 multiplexer, not a brain.
 
 Worked recipes live in [`examples/`](../examples/). This page is the
-matrix.
+attach matrix. Authority is a **ranked list** in
+[`law/permissions.md`](../law/permissions.md): higher rank = more
+authority. Top ranks may merge (still CODEOWNERS / human). Lower ranks
+read + propose only via PR. Agents never auto-merge law.
 
 ## Matrix
 

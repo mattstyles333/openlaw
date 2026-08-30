@@ -1,9 +1,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://mattstyles333.github.io',
   base: '/openlaw/',
+  vite: {
+    plugins: [tailwindcss()],
+  },
   integrations: [
     starlight({
       title: 'Openlaw',
@@ -30,6 +34,10 @@ export default defineConfig({
             { label: 'MCP / Portainer', slug: 'docs/mcp' },
             { label: 'Status', slug: 'docs/status' },
           ],
+        },
+        {
+          label: 'Ops',
+          items: [{ label: 'Dashboard', link: '/ops/' }],
         },
       ],
       head: [

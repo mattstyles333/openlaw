@@ -1,0 +1,133 @@
+# Thin PR review for the propose → review → merge loop.
+# The pull request is the discussion room. This job comments; it does not merge.
+# Never auto-merge law.
+name: pr-law-review
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-law-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Openlaw gates
+        id: law
+        run: |
+          set +e
+          bash scripts/check-law.sh > "$RUNNER_TEMP/check-law.out" 2>&1
+          code=$?
+          set -e
+          cat "$RUNNER_TEMP/check-law.out"
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Comment check-law summary
+        if: always()
+        continue-on-error: true
+        uses: actions/github-script@v7
+        env:
+          CHECK_LAW_EXIT: ${{ steps.law.outputs.exit_code }}
+          CHECK_LAW_LOG: ${{ runner.temp }}/check-law.out
+          BASE_REF: ${{ github.base_ref }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { execFileSync } = require('child_process');
+            const marker = '### Openlaw — pr-law-review';
+            let log = '';
+            try {
+              log = fs.readFileSync(process.env.CHECK_LAW_LOG, 'utf8');
+            } catch (e) {
+              log = '(no check-law output)';
+            }
+            const code = process.env.CHECK_LAW_EXIT || 'unknown';
+            const passed = code === '0';
+            const fails = log.split(/\r?\n/).filter((line) => line.startsWith('FAIL:')).slice(0, 12);
+            let files = [];
+            const base = process.env.BASE_REF || '';
+            try {
+              if (base) {
+                execFileSync('git', ['fetch', 'origin', base, '--depth=50'], { stdio: 'ignore' });
+                files = execFileSync(
+                  'git',
+                  ['diff', '--name-only', `origin/${base}...HEAD`],
+                  { encoding: 'utf8' },
+                )
+                  .trim()
+                  .split('\n')
+                  .filter(Boolean);
+              }
+            } catch (e) {
+              files = [];
+            }
+            const touchesLaw = files.some((f) => f === 'AGENTS.md' || f.startsWith('law/'));
+            const suggestions = [];
+            if (!passed) {
+              suggestions.push('Run `bash scripts/check-law.sh` locally and fix every `FAIL:` line before pushing again.');
+              for (const line of fails) {
+                suggestions.push(line);
+              }
+            } else {
+              suggestions.push('Gates passed. Keep the discussion on this pull request.');
+            }
+            if (touchesLaw) {
+              suggestions.push('This diff touches `law/` or `AGENTS.md`. That is a **law change**, not a silent working-tree write. Only CODEOWNERS merge it, and only after the matching ADR is `status: decided`.');
+            } else {
+              suggestions.push('Keep this PR a **proposal vs law change**. Do not patch `law/` or `AGENTS.md` here.');
+            }
+            suggestions.push('Discuss on this pull request. Do not write `law/` from the harness session.');
+            suggestions.push('Never auto-merge law.');
+            const failBlock = fails.length
+              ? ['', '```', ...fails, '```']
+              : [];
+            const body = [
+              marker,
+              '',
+              passed ? '`scripts/check-law.sh` **passed**.' : '`scripts/check-law.sh` **failed**.',
+              '',
+              'The pull request is the discussion room. This workflow does not merge.',
+              '',
+              '### Suggested improvements',
+              '',
+              ...suggestions.map((s) => `- ${s}`),
+              ...failBlock,
+            ].join('\n');
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              const existing = comments.find((c) => c.body && c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body,
+                });
+              }
+            } catch (err) {
+              const msg = (err && err.message) ? err.message : String(err);
+              core.warning(`comment permission missing; fail soft: ${msg}`);
+            }
+
+      - name: Fail if check-law failed
+        if: always() && steps.law.outputs.exit_code != '0'
+        run: |
+          echo "check-law failed (exit ${{ steps.law.outputs.exit_code }}). Comment step is fail-soft; the gate is not."
+          exit 1

@@ -1,25 +1,23 @@
-# Harness permissions
+# Harness rank
 
-Who may **read** law, **propose** ADRs, and **merge** law is this matrix —
-not a dashboard role, not a plugin SDK, not an agent auto-write of law.
+This is a ranked list. Higher rank = more authority. Edit the numbered
+list and the cutoff; do not invent a matrix or a dashboard.
 
-**Parent/merge is CODEOWNERS / human.** Agents never auto-merge `law/` or
-`AGENTS.md`. The CODEOWNERS parent is the only merge path.
+## Rule
 
-| Harness | read | propose | merge |
-| --- | --- | --- | --- |
-| Herdr/Grok Build | yes | yes | no — CODEOWNERS / human |
-| Cursor Grok Bot | yes | yes | no — CODEOWNERS / human |
-| Hermes | yes | yes | no — CODEOWNERS / human |
-| OpenCode | yes | yes | no — CODEOWNERS / human |
-| Claude Code | yes | yes | no — CODEOWNERS / human |
-| Gemini CLI | yes | yes | no — CODEOWNERS / human |
-| OpenClaw (stub) | yes | yes | no — CODEOWNERS / human |
+- Top ranks may merge. Merge is still CODEOWNERS / human. The CODEOWNERS
+  parent is the only merge path. Agents never auto-merge `law/` or
+  `AGENTS.md`.
+- Lower ranks: read + propose only via PR.
+- Cutoff: rank **1** may merge. Rank **2** and below propose via PR.
+- OpenClaw is a stub.
 
-## Notes
+## Ranked list
 
-- **read**: load `AGENTS.md` and `law/` (working tree preferred; optional MCP is a projection of git).
-- **propose**: open an ADR under `decisions/` with `status: proposed`. Any listed harness may propose. Proposals are not law until merged.
-- **merge**: only the humans listed in `CODEOWNERS`. Never an agent, never CI, never auto-write.
-- OpenClaw is a **stub** row only. A full attach is not this file.
-- Retrieval, memory products, and SQLite stores are not a permission model. This file is.
+1. Herdr / Grok Build
+2. Cursor Grok Bot
+3. Hermes
+4. OpenCode
+5. Claude Code
+6. Gemini CLI
+7. OpenClaw (stub)

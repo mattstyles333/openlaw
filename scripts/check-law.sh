@@ -11,7 +11,7 @@
 #   2. AGENTS.md max 12000 bytes
 #   3. AGENTS.md max 80 lines
 #   4. Hard-rule needles in AGENTS.md and law/constraints.md
-#   5. law/permissions.md capability needles (read, propose, merge, CODEOWNERS parent)
+#   5. law/permissions.md ranked list + CODEOWNERS parent merge rule
 #   6. decisions/20*.md frontmatter (date, owner, status)
 #   7. No secret patterns in law/ or AGENTS.md
 #   8. CODEOWNERS covers law/ and AGENTS.md
@@ -154,12 +154,9 @@ if [[ -f law/constraints.md ]]; then
   fi
 fi
 
-# 5. Permissions matrix needles (target law/permissions.md only) -------
-#    Short substrings (read) must not be grepped against the whole tree.
+# 5. Permissions ranked list (target law/permissions.md only) ----------
 PERM_NEEDLES=(
-  read
-  propose
-  merge
+  ranked
   CODEOWNERS
   parent
 )
@@ -171,6 +168,11 @@ if [[ -f law/permissions.md ]]; then
       fail "law/permissions.md missing needle: $needle"
     fi
   done
+  if grep -Eq '^[0-9]+\. ' law/permissions.md; then
+    ok "law/permissions.md has ranked list"
+  else
+    fail "law/permissions.md missing ranked list (numbered items)"
+  fi
 fi
 
 # 6. Decision frontmatter ----------------------------------------------

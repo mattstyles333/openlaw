@@ -16,13 +16,13 @@ layer. Secrets never enter the repo. MCP, when present, fails closed.
 The owner writes law in git. That is the only write path that becomes
 binding. Everything else is a proposal or a projection.
 
-## Harness × capability (read / propose / merge)
+## Harness rank
 
-Who may **read**, **propose**, and **merge** is a file, not a dashboard
-role. See [`law/permissions.md`](../law/permissions.md). Every listed
-harness may read law and propose ADRs. **Merge** (parent) is
-**CODEOWNERS / human**. Agents never auto-merge `law/` or `AGENTS.md`.
-OpenClaw is a stub row only.
+Authority is a **ranked list**, not a dashboard role. See
+[`law/permissions.md`](../law/permissions.md). Higher rank = more
+authority. Top ranks may merge; merge is still **CODEOWNERS / human**.
+Lower ranks read + propose only via PR. Agents never auto-merge `law/`
+or `AGENTS.md`. OpenClaw is a stub.
 
 ## CI is the agent security layer
 
@@ -40,8 +40,8 @@ The controls are:
 4. **Secret patterns** rejected in `law/` and `AGENTS.md`. Docs such as
    this file and `SECURITY.md` may *name* token variables.
 5. **CODEOWNERS** must cover `law/` and `AGENTS.md`.
-6. **Permissions matrix**: `law/permissions.md` must exist and name
-   read / propose / merge with CODEOWNERS as parent.
+6. **Permissions ranked list**: `law/permissions.md` must exist, list
+   harnesses in rank order, and state the CODEOWNERS parent merge rule.
 7. **MCP fail-closed**: if `mcp/server.py` exists, it must require
    bearer / 401 / `CANON_COMMIT_TOKEN` language and must not contain
    `execute_sql` or default to unauthenticated.

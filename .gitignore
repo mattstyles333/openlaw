@@ -1,0 +1,8 @@
+# Local MCP env and venv. Tokens never belong in git.
+.env
+mcp/.venv/
+mcp/**/__pycache__/
+mcp/**/*.egg-info/
+mcp/.pytest_cache/
+mcp/dist/
+mcp/build/

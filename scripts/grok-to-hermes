@@ -186,6 +186,51 @@ def _skill_from_file(path: Path, slug_source: str, origin: str) -> tuple[str, st
     return origin, name, desc, body
 
 
+def is_registry_heading(title: str) -> bool:
+    t = title.lower()
+    return (
+        "user-created" in t
+        or "cursor-managed" in t
+        or "plugin skills" in t
+        or t.startswith("plugin skill")
+    )
+
+
+def is_registry_body(body: str) -> bool:
+    """True when the section is a table or list of names, not skill prose."""
+    lines = [ln.strip() for ln in body.splitlines() if ln.strip()]
+    if not lines:
+        return True
+    table_lines = [ln for ln in lines if ln.startswith("|")]
+    has_id_name = any(
+        re.search(r"\|\s*id\s*\|", ln, re.I) or re.search(r"\|\s*name\s*\|", ln, re.I)
+        for ln in table_lines
+    )
+    bullets = [ln for ln in lines if re.match(r"^([-*+] |\d+\. )", ln)]
+    prose_bits = []
+    for ln in lines:
+        if ln.startswith("|") or re.match(r"^[:|\-\s]+$", ln):
+            continue
+        if re.match(r"^([-*+] |\d+\. )", ln):
+            continue
+        prose_bits.append(ln)
+    prose = " ".join(prose_bits)
+    sentences = [
+        s.strip()
+        for s in re.split(r"[.!?]+", prose)
+        if len(s.strip()) > 10
+    ]
+    if len(sentences) >= 2:
+        return False
+    if has_id_name:
+        return True
+    if table_lines and len(table_lines) >= max(2, len(lines) // 2):
+        return True
+    if bullets and len(bullets) >= max(1, len(lines) // 2):
+        return True
+    return False
+
+
 def skills_from_catalog(path: Path, origin: str) -> list[tuple[str, str, str, str]]:
     text = read_md(path)
     if not text:
@@ -194,17 +239,49 @@ def skills_from_catalog(path: Path, origin: str) -> list[tuple[str, str, str, st
     rest = chunks[1:]
     if not rest:
         name = heading_name(text, path.stem)
+        intro = chunks[0] if chunks else text
+        if is_registry_heading(name) or is_registry_body(intro):
+            note(f"skipping {origin} (registry, not a skill body)")
+            return []
         return [(origin, name, one_liner(text), text)]
     out: list[tuple[str, str, str, str]] = []
     for chunk in rest:
         lines = chunk.splitlines()
         title = lines[0].strip()
         body = "\n".join(lines[1:]).strip()
+        if is_registry_heading(title) or is_registry_body(body):
+            note(
+                f"skipping {origin} section {title!r} (registry, not a skill body)"
+            )
+            continue
         content = f"# {title}\n"
         if body:
             content += f"\n{body}"
-        out.append((f"{origin}##{title}", title, one_liner(content), content.strip() + "\n"))
+        out.append(
+            (f"{origin}##{title}", title, one_liner(content), content.strip() + "\n")
+        )
     return out
+
+
+_MEMORY_DROP = ("session", "log", "recall", "dump", "transcript", "today", "diary")
+
+
+def _memory_title_core(title: str) -> str:
+    return re.sub(r"\([^)]*\)", "", title).strip().lower()
+
+
+def is_durable_memory_section(title: str) -> bool:
+    raw = title.strip().lower()
+    core = _memory_title_core(title)
+    if any(w in raw for w in _MEMORY_DROP):
+        return False
+    if any(w in raw for w in ("durable", "convention", "profile", "identity")):
+        return True
+    if core.startswith("org") or core.startswith("process"):
+        return True
+    if core.startswith("clock") or core.startswith("people"):
+        return True
+    return False
 
 
 def parse_memory_md(text: str, origin: str) -> list[str]:
@@ -214,12 +291,14 @@ def parse_memory_md(text: str, origin: str) -> list[str]:
     for line in text.splitlines():
         if re.match(r"^##\s+", line):
             saw_heading = True
-            title = line.lstrip("#").strip().lower()
-            if any(w in title for w in ("durable", "convention", "profile", "identity")):
+            title = line.lstrip("#").strip()
+            if is_durable_memory_section(title):
                 current = "durable"
             else:
                 current = "drop"
-                note(f"ignoring {origin} section {line.strip()!r} (not durable conventions)")
+                note(
+                    f"ignoring {origin} section {line.strip()!r} (not durable conventions)"
+                )
             continue
         if current == "durable":
             item = line.strip().lstrip("-").strip()

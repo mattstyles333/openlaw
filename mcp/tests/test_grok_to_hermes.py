@@ -80,20 +80,26 @@ def test_grok_to_hermes_freeze_export_happy_path(tmp_path: Path) -> None:
     assert "Openlaw law bot" in soul
     assert "sample freeze export" in soul
     assert roster.splitlines()[0].lstrip("#").strip() in soul or "Roster" in soul
-    skills_md = (FIXTURE / "grok-bot" / "skills.md").read_text(encoding="utf-8")
-    assert "Roast dates printed on bags MUST match the roast log" in skills_md
-    roast = out / "skills" / "roast-dates" / "SKILL.md"
-    hours = out / "skills" / "cafe-hours" / "SKILL.md"
     git_law = out / "skills" / "git-markdown-law" / "SKILL.md"
-    assert roast.is_file()
-    assert hours.is_file()
     assert git_law.is_file()
-    roast_text = roast.read_text(encoding="utf-8")
-    assert roast_text.startswith("---\n")
-    meta = _frontmatter(roast_text)
-    assert meta["name"] == "roast-dates"
+    git_text = git_law.read_text(encoding="utf-8")
+    assert git_text.startswith("---\n")
+    meta = _frontmatter(git_text)
+    assert meta["name"] == "git-markdown-law"
     assert isinstance(meta["name"], str)
-    assert "Roast dates printed on bags MUST match the roast log" in roast_text
+    assert not (out / "skills" / "roast-dates").exists()
+    assert not (out / "skills" / "cafe-hours").exists()
+    skill_dirs = {p.name for p in (out / "skills").iterdir() if p.is_dir()}
+    for junk in skill_dirs:
+        assert not junk.startswith("user-created")
+        assert not junk.startswith("cursor-managed")
+        assert not junk.startswith("plugin-skills")
+    assert "registry" in proc.stderr or "User-created" in proc.stderr
+    assert "70% off" in soul
+    assert "£19.97" in soul
+    assert "WINBACK5" in soul
+    assert "FAKE-PROCESS" in soul
+    assert "opened the till" not in soul
     assert not (out / "skills" / "secrets-redacted").exists()
     skill_names = {p.parent.name for p in (out / "skills").glob("*/SKILL.md")}
     for banned in (
@@ -184,12 +190,42 @@ def test_grok_to_hermes_honors_memory_md(tmp_path: Path) -> None:
     assert proc.returncode == 0, proc.stderr
     soul = (out / "SOUL.md").read_text(encoding="utf-8")
     memory = (FIXTURE / "grok-bot" / "memory.md").read_text(encoding="utf-8")
-    assert "Durable conventions" in soul
-    assert "Public law is git markdown" in soul
+    assert "## Durable conventions" not in memory
+    assert "FAKE-ORG" in soul
+    assert "70% off" in soul
+    assert "£19.97" in soul
+    assert "WINBACK5" in soul
+    assert "FAKE-PROCESS" in soul
     assert "opened the till" not in soul
     assert "Session log" in memory
-    assert "not durable" in proc.stderr or "Session log" in proc.stderr
+    assert "Session log" in proc.stderr
     assert not (FIXTURE / "memory.json").exists()
+
+
+def test_grok_to_hermes_prose_catalog_section_still_maps(tmp_path: Path) -> None:
+    export = tmp_path / "prose-cat"
+    export.mkdir()
+    (export / "README.md").write_text("# bot\n", encoding="utf-8")
+    grok = export / "grok-bot"
+    grok.mkdir()
+    (grok / "skills.md").write_text(
+        "# Skills\n\n"
+        "## User-created (`/home/box/agent-data/workflows`)\n\n"
+        "| id | name | when |\n|---|---|---|\n| five-part-brief | Five-part brief | start |\n\n"
+        "## Roast dates\n\n"
+        "Print roast dates from the roast log, never invent them.\n\n"
+        "Roast dates printed on bags MUST match the roast log. If the log is missing, say so.\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "prose-out"
+    proc = _run(["grok-to-hermes", str(export), str(out)])
+    assert proc.returncode == 0, proc.stderr
+    assert (out / "skills" / "roast-dates" / "SKILL.md").is_file()
+    body = (out / "skills" / "roast-dates" / "SKILL.md").read_text(encoding="utf-8")
+    assert "Roast dates printed on bags MUST match the roast log" in body
+    skill_dirs = {p.name for p in (out / "skills").iterdir() if p.is_dir()}
+    assert not any(n.startswith("user-created") for n in skill_dirs)
+    assert "registry" in proc.stderr or "User-created" in proc.stderr
 
 
 def test_grok_to_hermes_rerun_warns_and_prunes_stale_skills(tmp_path: Path) -> None:

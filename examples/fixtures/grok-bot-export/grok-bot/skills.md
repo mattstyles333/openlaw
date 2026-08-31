@@ -1,13 +1,21 @@
 # Skills
 
-SOURCE: grok-bot/skills.md
+SOURCE: freeze-export grok-bot/skills.md (registry sample, FAKE names)
 
-## Roast dates
+## User-created (`/home/box/agent-data/workflows`)
 
-Print roast dates from the roast log, never invent them.
+| id | name | when |
+|---|---|---|
+| five-part-brief | Five-part brief | starting a job |
+| roast-log | Roast log | print dates from the roast log |
 
-Roast dates printed on bags MUST match the roast log. If the log is missing, say so. Do not invent a date.
+## Cursor-managed (`/home/box/agent-data/managed-skills/skills`)
 
-## Cafe hours
+- add-connector
+- export-bot-template
+- learn-from-demonstration
 
-Cafe hours are owner questions. An agent that does not know must say so.
+## Plugin skills (installed; read-only)
+
+- Stripe: stripe-best-practices, stripe-docs
+- Vercel: nextjs, vercel-cli

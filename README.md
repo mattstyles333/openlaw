@@ -125,6 +125,8 @@ bash scripts/openlaw law          # constraints + brand + sor
 bash scripts/openlaw priorities
 bash scripts/openlaw permissions
 bash scripts/openlaw check        # same gates as CI
+bash scripts/openlaw decisions    # decisions/20*.md from git
+bash scripts/openlaw propose slug # proposed ADR; not binding
 ```
 
 ## CI is the lock

@@ -18,8 +18,9 @@ merge loop, and a build-time ops one-pager. Live Portainer pin stays
 - Build-time Tailwind ops one-pager at `/ops/`. Generated from git
   markdown and workflow YAML at `astro build`. No live database, no
   runtime GitHub fetch.
-- Thin skills CLI: `bash scripts/openlaw law|priorities|permissions|check`.
-  Offline projection of git markdown. Not a memory product.
+- Thin skills CLI: `bash scripts/openlaw law|priorities|permissions|check|decisions|propose`.
+  Offline projection of git markdown. Not a memory product. `propose`
+  wraps `scripts/propose.sh` and does not edit `law/` or `AGENTS.md`.
 
 ## 0.1.0 — 2026-08-30
 

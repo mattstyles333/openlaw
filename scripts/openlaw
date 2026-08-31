@@ -2,12 +2,14 @@
 # Thin Openlaw CLI for skills. Offline. Git markdown. Not a memory product.
 #
 # Skills call: bash scripts/openlaw <command>
-# First slice: law | priorities | permissions | check | help
+# Commands: law | priorities | permissions | check | decisions | propose | help
 #
 # law          print constraints+brand+sor concatenated (same as MCP get_law). NOT search.
 # priorities   print law/priorities.md
 # permissions  print law/permissions.md
 # check        run scripts/check-law.sh
+# decisions    print decisions/20*.md from git. A proposed ADR is not binding.
+# propose      wrap scripts/propose.sh (does not write law/ or AGENTS.md)
 # help         this text
 set -euo pipefail
 
@@ -20,9 +22,12 @@ Commands:
   priorities    print law/priorities.md
   permissions   print law/permissions.md
   check         run scripts/check-law.sh
+  decisions     print decisions/20*.md from git (not binding)
+  propose [slug]  copy decisions/_template.md via scripts/propose.sh
   help          this help
 
 Offline. No HTTP. No secrets. Git is the source of truth.
+A proposed ADR is not law until CODEOWNERS merge.
 EOF
 }
 
@@ -69,6 +74,26 @@ cmd_law() {
   done
 }
 
+cmd_decisions() {
+  shopt -s nullglob
+  local files=(decisions/20*.md)
+  shopt -u nullglob
+  if [[ ${#files[@]} -eq 0 ]]; then
+    echo "FAIL: no decisions/20*.md" >&2
+    exit 1
+  fi
+  local first=1
+  local f
+  for f in "${files[@]}"; do
+    if [[ $first -eq 0 ]]; then
+      printf '\n---\n\n'
+    fi
+    first=0
+    printf '<!-- %s -->\n' "$f"
+    cat "$f"
+  done
+}
+
 ROOT="$(find_root)"
 cd "$ROOT"
 
@@ -88,6 +113,13 @@ case "$cmd" in
     ;;
   check)
     exec bash scripts/check-law.sh
+    ;;
+  decisions)
+    cmd_decisions
+    ;;
+  propose)
+    shift
+    exec bash scripts/propose.sh "$@"
     ;;
   *)
     echo "FAIL: unknown command: $cmd" >&2

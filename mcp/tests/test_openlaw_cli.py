@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CLI = ROOT / "scripts" / "openlaw"
+_WROTE = re.compile(r"^Wrote (\S+)", re.M)
 
 
 def _run(args: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -53,10 +56,8 @@ def test_openlaw_priorities_and_permissions() -> None:
 def test_openlaw_help_and_unknown() -> None:
     help_ = _run(["help"])
     assert help_.returncode == 0
-    assert "law" in help_.stdout
-    assert "priorities" in help_.stdout
-    assert "permissions" in help_.stdout
-    assert "check" in help_.stdout
+    for name in ("law", "priorities", "permissions", "check", "decisions", "propose"):
+        assert name in help_.stdout
     default = _run([])
     assert default.returncode == 0
     assert "Usage:" in default.stdout
@@ -72,3 +73,45 @@ def test_openlaw_check_runs_shipped_check_law() -> None:
     assert "scripts/openlaw" in (ROOT / "scripts" / "check-law.sh").read_text(
         encoding="utf-8"
     )
+
+
+def test_openlaw_decisions_prints_shipped_adr() -> None:
+    files = sorted((ROOT / "decisions").glob("20*.md"))
+    assert files, "need at least one shipped decisions/20*.md"
+    proc = _run(["decisions"])
+    assert proc.returncode == 0
+    body = proc.stdout
+    shipped = files[0].read_text(encoding="utf-8")
+    assert shipped.strip() in body
+    assert f"<!-- decisions/{files[0].name} -->" in body
+    extra = _run(["decisions", "this-is-not-a-search-query"])
+    assert extra.returncode == 0
+    assert shipped.strip() in extra.stdout
+
+
+def test_openlaw_propose_writes_proposed_adr_without_touching_law() -> None:
+    constraints = ROOT / "law" / "constraints.md"
+    agents = ROOT / "AGENTS.md"
+    before_constraints = constraints.read_text(encoding="utf-8")
+    before_agents = agents.read_text(encoding="utf-8")
+    slug = f"cli-pytest-{uuid.uuid4().hex[:12]}"
+    proc = _run(["propose", slug], check=False)
+    created: Path | None = None
+    try:
+        assert proc.returncode == 0, proc.stderr
+        match = _WROTE.search(proc.stdout)
+        assert match, f"stdout missing Wrote path:\n{proc.stdout}"
+        rel = match.group(1)
+        created = ROOT / rel
+        assert created.is_file(), created
+        assert created.parent == ROOT / "decisions" / "proposed"
+        body = created.read_text(encoding="utf-8")
+        assert re.search(r"^status:\s*proposed\s*$", body, re.M)
+        assert constraints.read_text(encoding="utf-8") == before_constraints
+        assert agents.read_text(encoding="utf-8") == before_agents
+        assert "Never auto-merge law" in proc.stdout
+    finally:
+        if created is not None and created.exists():
+            created.unlink()
+        assert constraints.read_text(encoding="utf-8") == before_constraints
+        assert agents.read_text(encoding="utf-8") == before_agents

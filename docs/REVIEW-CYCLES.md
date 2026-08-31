@@ -136,16 +136,17 @@ examples (cycle 3).
 ### Fixes
 
 - `scripts/openlaw` commands: `law`, `priorities`, `permissions`,
-  `check`, `help`. `law` concatenates constraints+brand+sor (not search).
+  `check`, `decisions`, `propose`, `help`. `law` concatenates
+  constraints+brand+sor (not search). `propose` wraps `scripts/propose.sh`.
 - Tests drive the shipped script. `check-law.sh` requires the file.
 
 ### Re-run
 
 - `bash scripts/check-law.sh` — exit 0 (`check-law.log`).
-- `pytest tests` in `mcp/` — 31 passed, including shipped `scripts/openlaw`
+- `pytest tests` in `mcp/` — 33 passed, including shipped `scripts/openlaw`
   (`mcp-pytest.log`).
 
 ### Still fails
 
-- No `decisions` / `propose` subcommand on this slice (use
-  `scripts/propose.sh`).
+- No owner `commit_decision` / `set_priorities` on the CLI (not this
+  slice; proposed ADRs stay non-binding until CODEOWNERS merge).

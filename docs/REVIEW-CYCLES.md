@@ -120,3 +120,32 @@ product-name gates (cycle 2).
 - No dedicated example for every possible fork of OpenCode config keys
   (the OpenCode file already says keys move between releases; invariant
   is remote HTTP + bearer, oauth false).
+
+## Cycle 4 — 2026-08-31 — thin skills CLI
+
+Class: invokable CLI surface (`scripts/openlaw`) so skills read law
+offline. Not auth (cycle 1), not secrets (cycle 2), not harness
+examples (cycle 3).
+
+### Findings
+
+- Skills had no single entry to print current law without HTTP MCP.
+- Existing scripts (`check-law.sh`, `propose.sh`) were separate; a
+  dispatcher was missing.
+
+### Fixes
+
+- `scripts/openlaw` commands: `law`, `priorities`, `permissions`,
+  `check`, `help`. `law` concatenates constraints+brand+sor (not search).
+- Tests drive the shipped script. `check-law.sh` requires the file.
+
+### Re-run
+
+- `bash scripts/check-law.sh` — exit 0 (`check-law.log`).
+- `pytest tests` in `mcp/` — 31 passed, including shipped `scripts/openlaw`
+  (`mcp-pytest.log`).
+
+### Still fails
+
+- No `decisions` / `propose` subcommand on this slice (use
+  `scripts/propose.sh`).

@@ -85,6 +85,7 @@ REQUIRED=(
   examples/gemini.md
   llms.txt
   scripts/reset-onboarding.sh
+  scripts/openlaw
 )
 for f in "${REQUIRED[@]}"; do
   if [[ -f "$f" ]]; then

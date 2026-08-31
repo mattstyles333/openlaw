@@ -116,6 +116,17 @@ You are Gemini CLI. Install Openlaw as always-on law.
 4. You are done when bash scripts/check-law.sh exits 0.
 ```
 
+## Skills CLI
+
+Skills invoke the shipped CLI. Offline. Git markdown. Not search.
+
+```bash
+bash scripts/openlaw law          # constraints + brand + sor
+bash scripts/openlaw priorities
+bash scripts/openlaw permissions
+bash scripts/openlaw check        # same gates as CI
+```
+
 ## CI is the lock
 
 ```bash

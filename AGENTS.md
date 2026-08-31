@@ -31,6 +31,8 @@ Optional MCP is a **projection of git**, not the source of truth.
    if you let them.
 4. Specialists propose ADRs in `decisions/` (`status: proposed`).
    Owners listed in `CODEOWNERS` merge decided law.
+5. Skills: `bash scripts/openlaw law` prints current law from git.
+   Offline. Not search. Not a memory product.
 
 Example company in this template: **Northwind Coffee** (fictional). Replace it.
 

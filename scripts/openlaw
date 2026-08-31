@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Thin Openlaw CLI for skills. Offline. Git markdown. Not a memory product.
+#
+# Skills call: bash scripts/openlaw <command>
+# First slice: law | priorities | permissions | check | help
+#
+# law          print constraints+brand+sor concatenated (same as MCP get_law). NOT search.
+# priorities   print law/priorities.md
+# permissions  print law/permissions.md
+# check        run scripts/check-law.sh
+# help         this text
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bash scripts/openlaw <command>
+
+Commands:
+  law           print law/constraints.md + brand.md + sor.md (not search)
+  priorities    print law/priorities.md
+  permissions   print law/permissions.md
+  check         run scripts/check-law.sh
+  help          this help
+
+Offline. No HTTP. No secrets. Git is the source of truth.
+EOF
+}
+
+find_root() {
+  local dir
+  dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  if [[ -f "$dir/AGENTS.md" && -d "$dir/law" ]]; then
+    printf '%s\n' "$dir"
+    return 0
+  fi
+  if dir="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    if [[ -f "$dir/AGENTS.md" && -d "$dir/law" ]]; then
+      printf '%s\n' "$dir"
+      return 0
+    fi
+  fi
+  echo "FAIL: cannot find Openlaw repo root (need AGENTS.md + law/)" >&2
+  exit 1
+}
+
+print_file() {
+  local rel="$1"
+  if [[ ! -f "$rel" ]]; then
+    echo "FAIL: missing $rel" >&2
+    exit 1
+  fi
+  cat "$rel"
+}
+
+cmd_law() {
+  local name
+  local first=1
+  for name in constraints.md brand.md sor.md; do
+    if [[ ! -f "law/$name" ]]; then
+      echo "FAIL: missing law/$name" >&2
+      exit 1
+    fi
+    if [[ $first -eq 0 ]]; then
+      printf '\n---\n\n'
+    fi
+    first=0
+    printf '<!-- law/%s -->\n' "$name"
+    cat "law/$name"
+  done
+}
+
+ROOT="$(find_root)"
+cd "$ROOT"
+
+cmd="${1:-help}"
+case "$cmd" in
+  -h|--help|help)
+    usage
+    ;;
+  law)
+    cmd_law
+    ;;
+  priorities)
+    print_file law/priorities.md
+    ;;
+  permissions)
+    print_file law/permissions.md
+    ;;
+  check)
+    exec bash scripts/check-law.sh
+    ;;
+  *)
+    echo "FAIL: unknown command: $cmd" >&2
+    usage >&2
+    exit 1
+    ;;
+esac

@@ -1,6 +1,6 @@
 # Openlaw gitleaks config.
-# Docs may mention token *names* (bearer, CANON_MCP_TOKEN). Values must still fail.
-# Do not globally allowlist env var names — that would hide CANON_MCP_TOKEN=<secret>.
+# Docs may mention token *names* (bearer, OPENLAW_MCP_TOKEN). Values must still fail.
+# Do not globally allowlist env var names — that would hide OPENLAW_MCP_TOKEN=<secret>.
 title = "Openlaw"
 
 [extend]
@@ -20,6 +20,8 @@ paths = [
   '''(?:^|/)examples/.*\.md$''',
 ]
 regexes = [
+  '''OPENLAW_MCP_TOKEN''',
+  '''OPENLAW_COMMIT_TOKEN''',
   '''CANON_MCP_TOKEN''',
   '''CANON_COMMIT_TOKEN''',
   '''GITHUB_TOKEN''',

@@ -1,11 +1,11 @@
 :root {
-  --canon-bg: #0b0b0c;
-  --canon-fg: #e8e4dc;
-  --canon-muted: #9a9488;
-  --canon-brass: #c4a574;
-  --canon-line: rgba(232, 228, 220, 0.12);
-  --canon-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --canon-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ol-bg: #0b0b0c;
+  --ol-fg: #e8e4dc;
+  --ol-muted: #9a9488;
+  --ol-brass: #c4a574;
+  --ol-line: rgba(232, 228, 220, 0.12);
+  --ol-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --ol-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --sl-color-accent: #c4a574;
   --sl-color-accent-high: #d8bf96;
   --sl-color-text-accent: #c4a574;
@@ -13,20 +13,20 @@
 
 html,
 body {
-  background: var(--canon-bg);
-  color: var(--canon-fg);
+  background: var(--ol-bg);
+  color: var(--ol-fg);
 }
 
 .hero-page {
   min-height: 100vh;
   margin: 0;
-  font-family: var(--canon-sans);
-  background: var(--canon-bg);
-  color: var(--canon-fg);
+  font-family: var(--ol-sans);
+  background: var(--ol-bg);
+  color: var(--ol-fg);
 }
 
 .hero-page a {
-  color: var(--canon-brass);
+  color: var(--ol-brass);
   text-decoration: none;
 }
 
@@ -44,7 +44,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  border-bottom: 1px solid var(--canon-line);
+  border-bottom: 1px solid var(--ol-line);
   padding-bottom: 1rem;
   font-size: 0.75rem;
   letter-spacing: 0.16em;
@@ -52,7 +52,7 @@ body {
 }
 
 .hero-nav .mark {
-  color: var(--canon-fg);
+  color: var(--ol-fg);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -85,12 +85,12 @@ body {
   font-size: 0.72rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--canon-brass);
+  color: var(--ol-brass);
   margin: 0 0 1.25rem;
 }
 
 .hero-stage h1 {
-  font-family: var(--canon-serif);
+  font-family: var(--ol-serif);
   font-size: clamp(3.6rem, 9vw, 7rem);
   font-weight: 400;
   line-height: 0.86;
@@ -101,7 +101,7 @@ body {
 .lede {
   font-size: 1.15rem;
   line-height: 1.5;
-  color: var(--canon-muted);
+  color: var(--ol-muted);
   max-width: 34rem;
   margin: 0 0 2rem;
 }
@@ -114,18 +114,18 @@ body {
 
 .cta {
   display: inline-block;
-  border: 1px solid var(--canon-brass);
+  border: 1px solid var(--ol-brass);
   padding: 0.65rem 1.1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  color: var(--canon-bg);
-  background: var(--canon-brass);
+  color: var(--ol-bg);
+  background: var(--ol-brass);
 }
 
 .cta.ghost {
   background: transparent;
-  color: var(--canon-brass);
+  color: var(--ol-brass);
 }
 
 .hero-visual {
@@ -150,7 +150,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  border-top: 1px solid var(--canon-line);
+  border-top: 1px solid var(--ol-line);
   padding-top: 2.5rem;
 }
 
@@ -161,7 +161,7 @@ body {
 }
 
 .rules h2 {
-  font-family: var(--canon-serif);
+  font-family: var(--ol-serif);
   font-size: 1.35rem;
   font-weight: 400;
   margin: 0 0 0.5rem;
@@ -169,14 +169,14 @@ body {
 
 .rules p {
   margin: 0;
-  color: var(--canon-muted);
+  color: var(--ol-muted);
   line-height: 1.5;
   font-size: 0.95rem;
 }
 
 .prompt-block {
   margin-top: 3rem;
-  border: 1px solid var(--canon-line);
+  border: 1px solid var(--ol-line);
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
@@ -193,7 +193,7 @@ body {
 }
 
 .prompt-toolbar h2 {
-  font-family: var(--canon-serif);
+  font-family: var(--ol-serif);
   font-size: 1.2rem;
   font-weight: 400;
   margin: 0;
@@ -203,9 +203,9 @@ body {
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--canon-brass);
+  color: var(--ol-brass);
   background: transparent;
-  border: 1px solid var(--canon-brass);
+  border: 1px solid var(--ol-brass);
   padding: 0.35rem 0.7rem;
   cursor: pointer;
 }
@@ -215,10 +215,10 @@ body {
   padding: 1rem;
   overflow: auto;
   background: #111112;
-  color: var(--canon-fg);
+  color: var(--ol-fg);
   font-size: 0.8rem;
   line-height: 1.45;
-  border: 1px solid var(--canon-line);
+  border: 1px solid var(--ol-line);
   white-space: pre-wrap;
 }
 
@@ -227,7 +227,7 @@ body {
 }
 
 .prompt-list details {
-  border-top: 1px solid var(--canon-line);
+  border-top: 1px solid var(--ol-line);
   padding: 0.7rem 0;
 }
 
@@ -236,7 +236,7 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  color: var(--canon-brass);
+  color: var(--ol-brass);
 }
 
 .prompt-list pre {
@@ -246,9 +246,9 @@ body {
 .foot {
   margin-top: 4rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--canon-line);
+  border-top: 1px solid var(--ol-line);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--canon-muted);
+  color: var(--ol-muted);
 }

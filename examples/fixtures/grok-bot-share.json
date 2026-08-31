@@ -1,0 +1,39 @@
+{
+  "profile": {
+    "name": "northwind-law",
+    "title": "Northwind Coffee law bot",
+    "description": "Always-on law for Northwind Coffee. Not a memory store."
+  },
+  "skills": [
+    {
+      "name": "roast-dates",
+      "description": "Print roast dates from the roast log, never invent them.",
+      "content": "Roast dates printed on bags MUST match the roast log. If the log is missing, say so. Do not invent a date."
+    }
+  ],
+  "memory": [
+    {
+      "content": "Northwind is a fictional independent coffee roaster and cafe.",
+      "kind": "profile",
+      "createdAt": "2026-08-31"
+    },
+    {
+      "content": "Tuesday 09:14: opened the till.",
+      "kind": "log",
+      "createdAt": "2026-08-31"
+    }
+  ],
+  "routines": [
+    {
+      "slug": "weekly-priorities",
+      "name": "Weekly priorities",
+      "content": "Rewrite weekly priorities from git. Do not invent policy."
+    }
+  ],
+  "plugins": [
+    {
+      "pluginId": "example-marketplace-plugin"
+    }
+  ],
+  "visibility": "PUBLIC"
+}

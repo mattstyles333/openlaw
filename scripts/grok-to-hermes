@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""Convert a Grok Bot create_bot_share_json dump into Hermes SOUL/skill excerpts.
+
+Always-on law in git markdown. Not MEMORY.md. Not search. Not a memory product.
+Does not write law/, AGENTS.md, MEMORY.md, or memories/.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+SECRET_LINE = re.compile(
+    r"API_KEY=|BEGIN RSA PRIVATE KEY|sk-live-|ghp_|gho_|password:",
+    re.I,
+)
+SLUG_KEEP = re.compile(r"[^a-z0-9]+")
+
+
+def fail(msg: str) -> None:
+    print(f"FAIL: {msg}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def find_root() -> Path:
+    here = Path(__file__).resolve().parent.parent
+    if (here / "AGENTS.md").is_file() and (here / "law").is_dir():
+        return here
+    raise SystemExit("FAIL: cannot find Openlaw repo root (need AGENTS.md + law/)")
+
+
+def usage() -> None:
+    print(
+        "Usage: bash scripts/openlaw grok-to-hermes <share.json> [out-dir]\n"
+        "\n"
+        "Reads a Grok Bot create_bot_share_json dump. Writes Hermes SOUL.md\n"
+        "plus skills/<slug>/SKILL.md excerpts. Does not write MEMORY.md,\n"
+        "memories/, law/, or AGENTS.md. Out-dir omitted → stdout.\n"
+        "share.json may be - for stdin.",
+        file=sys.stderr,
+    )
+
+
+def slugify(name: str) -> str:
+    slug = SLUG_KEEP.sub("-", name.strip().lower()).strip("-")
+    return slug or "skill"
+
+
+def strip_frontmatter(text: str) -> str:
+    body = text.replace("\r\n", "\n")
+    if not body.startswith("---"):
+        return body
+    rest = body[3:]
+    if rest.startswith("\n"):
+        rest = rest[1:]
+    end = rest.find("\n---")
+    if end == -1:
+        return body
+    return rest[end + 4 :].lstrip("\n")
+
+
+def scrub(text: str) -> str:
+    lines = []
+    for line in strip_frontmatter(text).splitlines():
+        if SECRET_LINE.search(line):
+            continue
+        lines.append(line)
+    return "\n".join(lines).strip()
+
+
+def load_dump(path: str) -> dict:
+    if path == "-":
+        raw = sys.stdin.read()
+    else:
+        p = Path(path)
+        if not p.is_file():
+            fail(f"missing share dump: {path}")
+        raw = p.read_text(encoding="utf-8")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        fail(f"invalid JSON: {exc}")
+    if not isinstance(data, dict):
+        fail("share dump must be a JSON object (create_bot_share_json payload)")
+    return data
+
+
+def excerpt_soul(root: Path) -> str:
+    script = root / "scripts" / "excerpt-soul.sh"
+    proc = subprocess.run(
+        ["bash", str(script)],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return proc.stdout.strip()
+
+
+def build_soul(root: Path, dump: dict) -> str:
+    profile = dump.get("profile")
+    if not isinstance(profile, dict):
+        fail("missing profile object")
+    name = str(profile.get("name") or "").strip()
+    if not name:
+        fail("profile.name is required")
+    title = str(profile.get("title") or "").strip()
+    description = str(profile.get("description") or "").strip()
+    parts = [f"# {name}", ""]
+    if title:
+        parts.extend([title, ""])
+    if description:
+        parts.extend([description, ""])
+    parts.append(excerpt_soul(root))
+    durable: list[str] = []
+    memory = dump.get("memory") or []
+    if isinstance(memory, list):
+        for item in memory:
+            if not isinstance(item, dict):
+                continue
+            kind = str(item.get("kind") or "profile").strip().lower()
+            content = scrub(str(item.get("content") or ""))
+            if kind == "log" or not content:
+                continue
+            if kind == "profile":
+                durable.append(content)
+    if durable:
+        parts.extend(["", "## Durable conventions", ""])
+        for line in durable:
+            parts.append(f"- {line}")
+    parts.append("")
+    parts.append(
+        "Do not treat MEMORY.md or memories/ as law. Retrieval is not law."
+    )
+    return "\n".join(parts).rstrip() + "\n"
+
+
+def build_skills(dump: dict) -> list[tuple[str, str]]:
+    skills = dump.get("skills") or []
+    if not isinstance(skills, list):
+        fail("skills must be an array")
+    out: list[tuple[str, str]] = []
+    for item in skills:
+        if not isinstance(item, dict):
+            fail("skills[] items must be objects")
+        name = str(item.get("name") or "").strip()
+        if not name:
+            fail("skills[].name is required")
+        desc = str(item.get("description") or "").strip()
+        content = scrub(str(item.get("content") or ""))
+        if not content:
+            fail(f"skills[].content is required for {name}")
+        body_lines = [f"# {name}", ""]
+        if desc:
+            body_lines.extend([desc, ""])
+        body_lines.append(content)
+        out.append((slugify(name), "\n".join(body_lines).rstrip() + "\n"))
+    return out
+
+
+def refuse_out_dir(root: Path, out: Path) -> None:
+    target = out.resolve()
+    law = (root / "law").resolve()
+    agents = (root / "AGENTS.md").resolve()
+    if target == agents:
+        fail("refusing to write AGENTS.md")
+    if target == law or law in target.parents or target.name == "law":
+        fail("refusing to write under law/")
+    if target.name in {"MEMORY.md", "memories"}:
+        fail("refusing to write MEMORY.md / memories/ (recall is not law)")
+    if "memories" in target.parts:
+        fail("refusing to write under memories/")
+
+
+def note_ignored(dump: dict) -> None:
+    if dump.get("routines"):
+        print("note: ignoring routines[] (not mapped this slice)", file=sys.stderr)
+    if dump.get("plugins"):
+        print("note: ignoring plugins[] (not mapped this slice)", file=sys.stderr)
+    if "visibility" in dump:
+        print("note: ignoring visibility (not mapped this slice)", file=sys.stderr)
+    profile = dump.get("profile")
+    if isinstance(profile, dict):
+        for key in ("avatarColor", "avatarShape"):
+            if key in profile:
+                print(f"note: ignoring profile.{key}", file=sys.stderr)
+
+
+def write_tree(out: Path, soul: str, skills: list[tuple[str, str]]) -> list[str]:
+    out.mkdir(parents=True, exist_ok=True)
+    wrote: list[str] = []
+    soul_path = out / "SOUL.md"
+    if soul_path.name == "MEMORY.md":
+        fail("refusing to write MEMORY.md")
+    soul_path.write_text(soul, encoding="utf-8")
+    wrote.append(str(soul_path))
+    for slug, body in skills:
+        skill_dir = out / "skills" / slug
+        skill_dir.mkdir(parents=True, exist_ok=True)
+        path = skill_dir / "SKILL.md"
+        path.write_text(body, encoding="utf-8")
+        wrote.append(str(path))
+    return wrote
+
+
+def print_stdout(soul: str, skills: list[tuple[str, str]]) -> None:
+    chunks = [f"<!-- SOUL.md -->\n{soul.rstrip()}\n"]
+    for slug, body in skills:
+        chunks.append(f"<!-- skills/{slug}/SKILL.md -->\n{body.rstrip()}\n")
+    sys.stdout.write("\n---\n\n".join(chunks))
+    if not chunks[-1].endswith("\n"):
+        sys.stdout.write("\n")
+
+
+def main(argv: list[str]) -> int:
+    if not argv or argv[0] in {"-h", "--help", "help"}:
+        usage()
+        return 0 if argv and argv[0] in {"-h", "--help", "help"} else 1
+    dump_path = argv[0]
+    out_arg = argv[1] if len(argv) > 1 else None
+    if len(argv) > 2:
+        fail("too many arguments")
+    root = find_root()
+    dump = load_dump(dump_path)
+    soul = build_soul(root, dump)
+    skills = build_skills(dump)
+    note_ignored(dump)
+    if out_arg:
+        out = Path(out_arg)
+        refuse_out_dir(root, out)
+        wrote = write_tree(out, soul, skills)
+        print(f"Openlaw grok-to-hermes: {root}")
+        for path in wrote:
+            try:
+                rel = Path(path).resolve().relative_to(root)
+            except ValueError:
+                rel = Path(path)
+            print(f"Wrote {rel}")
+        print("Do not paste this into MEMORY.md. Retrieval is not law.")
+        return 0
+    print_stdout(soul, skills)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main(sys.argv[1:]))
+    except BrokenPipeError:
+        raise SystemExit(0)

@@ -23,7 +23,7 @@ read + propose only via PR. Agents never auto-merge law.
 | **OpenCode** | Loads `AGENTS.md`. | Remote MCP, `oauth: false`, bearer token. See [examples/opencode.md](../examples/opencode.md). |
 | **Claude Code** | Loads `CLAUDE.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. See [examples/claude.md](../examples/claude.md). |
 | **Gemini CLI** | Loads `GEMINI.md`, which points at `AGENTS.md` and `law/`. | Same HTTP MCP + bearer. See [examples/gemini.md](../examples/gemini.md). |
-| **Hermes** | Keep `SOUL.md` short. Paste the excerpt from `scripts/excerpt-soul.sh` (~15 lines of hard rules). Do not use `MEMORY.md` as the policy store. Leave `memory.provider` unset unless you *also* want recall — and even then, recall is not law. | Same HTTP MCP + bearer. See [examples/hermes.md](../examples/hermes.md). |
+| **Hermes** | Keep `SOUL.md` short. Paste `scripts/excerpt-soul.sh`, or convert a Grok Bot share dump with `bash scripts/openlaw grok-to-hermes`. Do not use `MEMORY.md` as the policy store. Leave `memory.provider` unset unless you *also* want recall — and even then, recall is not law. | Same HTTP MCP + bearer. See [examples/hermes.md](../examples/hermes.md). |
 
 ## Rules that apply to every harness
 

@@ -16,6 +16,24 @@ The excerpt is the three hard rules plus "retrieval is not law". It
 is not a substitute for cloning the repo. Hermes should still have
 the working tree (or HTTP MCP) so it can read `law/`.
 
+## Grok Bot share dump → Hermes excerpts
+
+If you have a Grok Bot `create_bot_share_json` dump, convert it to a
+short `SOUL.md` plus skill excerpts. That is git-markdown law, not
+`MEMORY.md`.
+
+```bash
+bash scripts/openlaw grok-to-hermes examples/fixtures/grok-bot-share.json /tmp/hermes-excerpts
+# Paste /tmp/hermes-excerpts/SOUL.md into Hermes SOUL.md.
+# Copy skills/<slug>/SKILL.md next to the Hermes profile if you want those skills.
+# Leave memory.provider unset. Do not copy the dump into MEMORY.md.
+```
+
+`kind: profile` memory lines may fold into SOUL as durable conventions.
+`kind: log` lines are dropped. Routines and marketplace plugins are not
+mapped on this slice. The converter refuses to write `law/`, `AGENTS.md`,
+`MEMORY.md`, or `memories/`.
+
 ## Memory is not law
 
 - Leave `memory.provider` **unset** unless you independently want

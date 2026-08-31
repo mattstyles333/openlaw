@@ -2,6 +2,7 @@
 .env
 mcp/.venv/
 mcp/**/__pycache__/
+scripts/**/__pycache__/
 mcp/**/*.egg-info/
 mcp/.pytest_cache/
 mcp/dist/

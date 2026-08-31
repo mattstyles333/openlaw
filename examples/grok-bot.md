@@ -16,6 +16,19 @@ into, and any MCP it calls must be **public HTTPS**.
 Do not paste policy into a Bot "memory" or a Cursor index and then
 delete `law/`. Retrieval is not law.
 
+## Export a share template for Hermes
+
+A Grok Bot share dump (`create_bot_share_json`: `profile`, `skills[]`,
+optional `memory[]`) is a recipe, not live law. To land it as always-on
+Hermes law (SOUL + skill excerpts, never `MEMORY.md`):
+
+```bash
+bash scripts/openlaw grok-to-hermes path/to/share.json /tmp/hermes-excerpts
+```
+
+See [examples/hermes.md](hermes.md). Keep `AGENTS.md` + `law/` in git as
+the source of truth. Do not treat the dump as a search index.
+
 ## Optional MCP (account-wide HTTP)
 
 If the Bot must read law from a canonical repo it did not clone:

@@ -56,7 +56,15 @@ def test_openlaw_priorities_and_permissions() -> None:
 def test_openlaw_help_and_unknown() -> None:
     help_ = _run(["help"])
     assert help_.returncode == 0
-    for name in ("law", "priorities", "permissions", "check", "decisions", "propose"):
+    for name in (
+        "law",
+        "priorities",
+        "permissions",
+        "check",
+        "decisions",
+        "propose",
+        "grok-to-hermes",
+    ):
         assert name in help_.stdout
     default = _run([])
     assert default.returncode == 0

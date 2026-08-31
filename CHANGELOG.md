@@ -21,6 +21,9 @@ merge loop, and a build-time ops one-pager. Live Portainer pin stays
 - Thin skills CLI: `bash scripts/openlaw law|priorities|permissions|check|decisions|propose`.
   Offline projection of git markdown. Not a memory product. `propose`
   wraps `scripts/propose.sh` and does not edit `law/` or `AGENTS.md`.
+- `bash scripts/openlaw grok-to-hermes <share.json> [out-dir]` turns a
+  Grok Bot share dump into Hermes `SOUL.md` + skill excerpts. Not
+  `MEMORY.md`. Does not write `law/` or `AGENTS.md`.
 
 ## 0.1.0 — 2026-08-30
 

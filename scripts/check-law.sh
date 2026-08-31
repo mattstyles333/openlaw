@@ -86,6 +86,8 @@ REQUIRED=(
   llms.txt
   scripts/reset-onboarding.sh
   scripts/openlaw
+  scripts/grok-to-hermes
+  examples/fixtures/grok-bot-share.json
 )
 for f in "${REQUIRED[@]}"; do
   if [[ -f "$f" ]]; then

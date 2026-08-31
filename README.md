@@ -128,7 +128,7 @@ bash scripts/openlaw check        # same gates as CI
 bash scripts/openlaw decisions    # decisions/20*.md from git
 bash scripts/openlaw propose slug # proposed ADR; not binding
 bash scripts/openlaw grok-to-hermes examples/fixtures/grok-bot-export out-dir
-                              # Grok Bot markdown folder → Hermes SOUL + skills
+                              # freeze-export folder → Hermes SOUL + skills
 ```
 
 ## CI is the lock

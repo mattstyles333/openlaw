@@ -16,10 +16,11 @@ The excerpt is the three hard rules plus "retrieval is not law". It
 is not a substitute for cloning the repo. Hermes should still have
 the working tree (or HTTP MCP) so it can read `law/`.
 
-## Grok Bot markdown export → Hermes excerpts
+## Grok Bot freeze-export → Hermes excerpts
 
-Grok Bot export is a **folder of markdown**, not a JSON dump. Convert
-it to Hermes-loadable `SOUL.md` plus `skills/<slug>/SKILL.md` (YAML
+Grok Bot export is a **freeze-export folder of named markdown files**,
+not a JSON dump and not a required `SOUL.md`. Convert it to
+Hermes-loadable `SOUL.md` plus `skills/<slug>/SKILL.md` (YAML
 frontmatter). That is git-markdown law, not `MEMORY.md`.
 
 ```bash
@@ -35,12 +36,14 @@ bash scripts/openlaw grok-to-hermes examples/fixtures/grok-bot-export out-dir
 # Leave memory.provider unset. Do not copy anything into MEMORY.md.
 ```
 
-What maps: `SOUL.md` or `instructions.md` → identity in `SOUL.md`;
-skill markdown (under `skills/` or flat `*.md` with a heading) →
-`SKILL.md` with `name` / `description` frontmatter. What does **not**
-map: routines, marketplace plugins, learned memory/logs (stderr notes).
-The converter refuses `law/`, the repo root, `AGENTS.md`, `MEMORY.md`,
-and `memories/`.
+What maps: identity from `grok-bot/roster.md`, `README.md`, and
+`00-FREEZE.md`; skills from `grok-bot/skills.md` and `skills/`; durable
+conventions from `grok-bot/memory.md`. What does **not** map: routines,
+marketplace plugins, session logs, snapshots (`architecture.md`,
+`decisions.md`, `in-flight.md`, `openlaw.md`, `00-FREEZE.md` as a
+skill), and especially `secrets-redacted.md` (named on stderr). The
+converter refuses `law/`, the repo root, `AGENTS.md`, `MEMORY.md`, and
+`memories/`.
 
 ## Memory is not law
 

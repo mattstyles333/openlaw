@@ -22,9 +22,10 @@ merge loop, and a build-time ops one-pager. Live Portainer pin stays
   Offline projection of git markdown. Not a memory product. `propose`
   wraps `scripts/propose.sh` and does not edit `law/` or `AGENTS.md`.
 - `bash scripts/openlaw grok-to-hermes <export-folder> <out-dir>` turns a
-  Grok Bot markdown export folder into Hermes `SOUL.md` + loadable
-  `SKILL.md` (YAML frontmatter). Not `MEMORY.md`. Does not write
-  `law/` or `AGENTS.md`.
+  Grok Bot freeze-export markdown folder into Hermes `SOUL.md` + loadable
+  `SKILL.md` (YAML-safe frontmatter). Identity does not require
+  `SOUL.md`. Snapshots and `secrets-redacted.md` are never skills. Not
+  `MEMORY.md`. Does not write `law/` or `AGENTS.md`.
 
 ## 0.1.0 — 2026-08-30
 

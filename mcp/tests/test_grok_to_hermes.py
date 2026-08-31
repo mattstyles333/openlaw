@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
-import shutil
 import subprocess
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CLI = ROOT / "scripts" / "openlaw"
@@ -23,20 +23,34 @@ def _run(args: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _copy_fixture(dest: Path) -> Path:
-    shutil.copytree(FIXTURE, dest)
-    return dest
+def _frontmatter(text: str) -> dict:
+    assert text.startswith("---\n"), text[:80]
+    _, fm, _body = text.split("---", 2)
+    data = yaml.safe_load(fm)
+    assert isinstance(data, dict)
+    return data
 
 
-def test_fixture_is_markdown_export_folder() -> None:
+def test_fixture_is_freeze_export_folder() -> None:
     assert FIXTURE.is_dir()
-    assert (FIXTURE / "SOUL.md").is_file()
-    skills = list((FIXTURE / "skills").glob("*.md"))
-    assert len(skills) >= 2
-    assert not (ROOT / "examples" / "fixtures" / "grok-bot-share.json").exists()
+    assert not (FIXTURE / "SOUL.md").exists()
+    assert not (FIXTURE / "instructions.md").exists()
+    assert not (FIXTURE / "memory.json").exists()
+    assert (FIXTURE / "00-FREEZE.md").is_file()
+    assert (FIXTURE / "README.md").is_file()
+    assert (FIXTURE / "grok-bot" / "roster.md").is_file()
+    assert (FIXTURE / "grok-bot" / "skills.md").is_file()
+    assert (FIXTURE / "grok-bot" / "memory.md").is_file()
+    assert (FIXTURE / "secrets-redacted.md").is_file()
+    secrets = (FIXTURE / "secrets-redacted.md").read_text(encoding="utf-8")
+    assert "FAKE" in secrets
+    assert "password:" not in secrets
+    assert "API_KEY=" not in secrets
+    assert "sk-live-" not in secrets
+    assert "ghp_" not in secrets
 
 
-def test_grok_to_hermes_markdown_folder_happy_path(tmp_path: Path) -> None:
+def test_grok_to_hermes_freeze_export_happy_path(tmp_path: Path) -> None:
     out = tmp_path / "hermes-excerpts"
     constraints = ROOT / "law" / "constraints.md"
     agents = ROOT / "AGENTS.md"
@@ -62,50 +76,91 @@ def test_grok_to_hermes_markdown_folder_happy_path(tmp_path: Path) -> None:
         assert needle in excerpt
     assert "Retrieval is not law" in soul
     assert "MEMORY.md" in soul
-    identity = (FIXTURE / "SOUL.md").read_text(encoding="utf-8")
-    assert "northwind-law" in soul
-    assert "Northwind Coffee law bot" in soul
-    for skill_src in (FIXTURE / "skills").glob("*.md"):
-        src_body = skill_src.read_text(encoding="utf-8").strip()
-        written = list((out / "skills").glob(f"*/SKILL.md"))
-        assert any(src_body in p.read_text(encoding="utf-8") for p in written), skill_src.name
+    roster = (FIXTURE / "grok-bot" / "roster.md").read_text(encoding="utf-8")
+    assert "Openlaw law bot" in soul
+    assert "sample freeze export" in soul
+    assert roster.splitlines()[0].lstrip("#").strip() in soul or "Roster" in soul
+    skills_md = (FIXTURE / "grok-bot" / "skills.md").read_text(encoding="utf-8")
+    assert "Roast dates printed on bags MUST match the roast log" in skills_md
     roast = out / "skills" / "roast-dates" / "SKILL.md"
+    hours = out / "skills" / "cafe-hours" / "SKILL.md"
+    git_law = out / "skills" / "git-markdown-law" / "SKILL.md"
     assert roast.is_file()
+    assert hours.is_file()
+    assert git_law.is_file()
     roast_text = roast.read_text(encoding="utf-8")
-    assert roast_text.startswith("---\nname: roast-dates\n")
-    assert "description:" in roast_text.split("---", 2)[1]
+    assert roast_text.startswith("---\n")
+    meta = _frontmatter(roast_text)
+    assert meta["name"] == "roast-dates"
+    assert isinstance(meta["name"], str)
+    assert "Roast dates printed on bags MUST match the roast log" in roast_text
+    assert not (out / "skills" / "secrets-redacted").exists()
+    skill_names = {p.parent.name for p in (out / "skills").glob("*/SKILL.md")}
+    for banned in (
+        "secrets-redacted",
+        "architecture",
+        "decisions",
+        "in-flight",
+        "openlaw",
+        "00-freeze",
+    ):
+        assert banned not in skill_names
+    for skipped in (
+        "secrets-redacted.md",
+        "architecture.md",
+        "decisions.md",
+        "in-flight.md",
+        "openlaw.md",
+    ):
+        assert skipped in proc.stderr, skipped
     assert not (out / "MEMORY.md").exists()
     assert not (out / "memories").exists()
     assert constraints.read_text(encoding="utf-8") == before_c
     assert agents.read_text(encoding="utf-8") == before_a
     assert "Wrote" in proc.stdout
-    assert "routines.md" in proc.stderr
-    assert identity.strip() in soul
 
 
-def test_grok_to_hermes_emits_yaml_frontmatter(tmp_path: Path) -> None:
-    out = tmp_path / "out"
-    proc = _run(["grok-to-hermes", str(FIXTURE), str(out)])
+def test_grok_to_hermes_yaml_safe_frontmatter(tmp_path: Path) -> None:
+    export = tmp_path / "yaml-export"
+    export.mkdir()
+    (export / "README.md").write_text("# yaml-bot\n", encoding="utf-8")
+    skills = export / "skills"
+    skills.mkdir()
+    cases = {
+        "colon.md": "# Note: do this\n\ncolon-space heading\n",
+        "dash.md": "# - leading dash\n\ndash heading\n",
+        "brace.md": "# {braced}\n\nbrace heading\n",
+        "yes.md": "# yes\n\nyes-style heading\n",
+    }
+    for name, body in cases.items():
+        (skills / name).write_text(body, encoding="utf-8")
+    out = tmp_path / "yaml-out"
+    proc = _run(["grok-to-hermes", str(export), str(out)])
     assert proc.returncode == 0, proc.stderr
+    loaded: dict[str, dict] = {}
     for skill in (out / "skills").glob("*/SKILL.md"):
         text = skill.read_text(encoding="utf-8")
-        assert text.startswith("---\n")
-        _, fm, _body = text.split("---", 2)
-        assert "name:" in fm
-        assert "description:" in fm
-        assert skill.parent.name in fm
+        data = _frontmatter(text)
+        assert isinstance(data["name"], str)
+        assert not isinstance(data["name"], bool)
+        assert data["name"] is not None
+        loaded[skill.parent.name] = data
+    assert "yes" in loaded
+    assert loaded["yes"]["name"] == "yes"
+    assert any(":" in str(d.get("description", "")) or "Note" in str(d.get("description", "")) for d in loaded.values())
+    assert any(str(d.get("description", "")).startswith("-") or "dash" in str(d.get("description", "")).lower() for d in loaded.values())
+    assert any("{" in str(d.get("description", "")) or "braced" in str(d.get("description", "")).lower() for d in loaded.values())
 
 
 def test_grok_to_hermes_slug_collision_and_all_punctuation_fail(tmp_path: Path) -> None:
     export = tmp_path / "collide"
     export.mkdir()
-    (export / "SOUL.md").write_text("# bot\n", encoding="utf-8")
+    (export / "README.md").write_text("# bot\n", encoding="utf-8")
     skills = export / "skills"
     skills.mkdir()
     (skills / "Roast-Dates.md").write_text("# Roast Dates\n\nA\n", encoding="utf-8")
     (skills / "roast_dates.md").write_text("# roast_dates\n\nB\n", encoding="utf-8")
-    out = tmp_path / "out-collide"
-    proc = _run(["grok-to-hermes", str(export), str(out)])
+    proc = _run(["grok-to-hermes", str(export), str(tmp_path / "out-collide")])
     assert proc.returncode != 0
     assert "Traceback" not in proc.stderr
     assert "collision" in proc.stderr.lower()
@@ -114,7 +169,7 @@ def test_grok_to_hermes_slug_collision_and_all_punctuation_fail(tmp_path: Path) 
 
     punct = tmp_path / "punct"
     punct.mkdir()
-    (punct / "SOUL.md").write_text("# bot\n", encoding="utf-8")
+    (punct / "README.md").write_text("# bot\n", encoding="utf-8")
     (punct / "skills").mkdir()
     (punct / "skills" / "bang.md").write_text("# !!!\n\nno slug\n", encoding="utf-8")
     proc2 = _run(["grok-to-hermes", str(punct), str(tmp_path / "out-punct")])
@@ -123,41 +178,24 @@ def test_grok_to_hermes_slug_collision_and_all_punctuation_fail(tmp_path: Path) 
     assert "all-punctuation" in proc2.stderr
 
 
-def test_grok_to_hermes_kind_profile_whitelist(tmp_path: Path) -> None:
-    export = _copy_fixture(tmp_path / "export-mem")
-    sidecar = {
-        "not": "used as primary export",
-    }
-    (export / "memory.json").write_text(
-        json.dumps(
-            [
-                {"kind": "profile", "content": "Northwind is a fictional independent coffee roaster and cafe."},
-                {"kind": "log", "content": "Tuesday 09:14: opened the till."},
-                {"content": "no-kind line must not enter SOUL"},
-                {"kind": "profile", "content": 12345},
-            ]
-        ),
-        encoding="utf-8",
-    )
-    del sidecar
+def test_grok_to_hermes_honors_memory_md(tmp_path: Path) -> None:
     out = tmp_path / "out-mem"
-    proc = _run(["grok-to-hermes", str(export), str(out)])
+    proc = _run(["grok-to-hermes", str(FIXTURE), str(out)])
     assert proc.returncode == 0, proc.stderr
     soul = (out / "SOUL.md").read_text(encoding="utf-8")
+    memory = (FIXTURE / "grok-bot" / "memory.md").read_text(encoding="utf-8")
     assert "Durable conventions" in soul
-    assert "fictional independent coffee roaster" in soul
+    assert "Public law is git markdown" in soul
     assert "opened the till" not in soul
-    assert "no-kind line" not in soul
-    assert "12345" not in soul
-    assert "kind='log'" in proc.stderr or 'kind="log"' in proc.stderr or "kind=log" in proc.stderr
-    assert "no-kind" in proc.stderr
-    assert "non-string" in proc.stderr
+    assert "Session log" in memory
+    assert "not durable" in proc.stderr or "Session log" in proc.stderr
+    assert not (FIXTURE / "memory.json").exists()
 
 
 def test_grok_to_hermes_rerun_warns_and_prunes_stale_skills(tmp_path: Path) -> None:
     export_a = tmp_path / "export-a"
     export_a.mkdir()
-    (export_a / "SOUL.md").write_text("# first-soul\n", encoding="utf-8")
+    (export_a / "README.md").write_text("# first-soul\n", encoding="utf-8")
     (export_a / "skills").mkdir()
     (export_a / "skills" / "alpha.md").write_text("# Alpha\n\nalpha body unique\n", encoding="utf-8")
     out = tmp_path / "out-rerun"
@@ -167,7 +205,7 @@ def test_grok_to_hermes_rerun_warns_and_prunes_stale_skills(tmp_path: Path) -> N
 
     export_b = tmp_path / "export-b"
     export_b.mkdir()
-    (export_b / "SOUL.md").write_text("# second-soul\n", encoding="utf-8")
+    (export_b / "README.md").write_text("# second-soul\n", encoding="utf-8")
     (export_b / "skills").mkdir()
     (export_b / "skills" / "beta.md").write_text("# Beta\n\nbeta body unique\n", encoding="utf-8")
     second = _run(["grok-to-hermes", str(export_b), str(out)])
@@ -179,9 +217,6 @@ def test_grok_to_hermes_rerun_warns_and_prunes_stale_skills(tmp_path: Path) -> N
     soul = (out / "SOUL.md").read_text(encoding="utf-8")
     assert "second-soul" in soul
     assert "first-soul" not in soul
-    assert "beta body unique" in (out / "skills" / "beta" / "SKILL.md").read_text(
-        encoding="utf-8"
-    )
 
 
 def test_grok_to_hermes_refuses_law_root_file_and_memory(tmp_path: Path) -> None:

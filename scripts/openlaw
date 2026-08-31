@@ -26,8 +26,8 @@ Commands:
   decisions     print decisions/20*.md from git (not binding)
   propose [slug]  copy decisions/_template.md via scripts/propose.sh
   grok-to-hermes <export-folder> <out-dir>
-                Grok Bot markdown folder → Hermes SOUL.md + SKILL.md
-                (not MEMORY.md; not law/; not AGENTS.md)
+                freeze-export markdown folder → Hermes SOUL.md + SKILL.md
+                (not MEMORY.md; not law/; not secrets-redacted)
   help          this help
 
 Offline. No HTTP. No secrets. Git is the source of truth.

@@ -18,18 +18,18 @@ delete `law/`. Retrieval is not law.
 
 ## Export markdown for Hermes
 
-Grok Bot export is a folder of named `.md` files (identity in `SOUL.md`
-or `instructions.md`, plus skill markdown). It is a recipe, not live
-law. Land it as always-on Hermes law (SOUL + loadable skills, never
-`MEMORY.md`):
+Grok Bot freeze-export is a folder of named `.md` files (`00-FREEZE.md`,
+`README.md`, `grok-bot/roster.md`, `grok-bot/skills.md`, …). It is a
+recipe, not live law. Land it as always-on Hermes law (SOUL + loadable
+skills, never `MEMORY.md`):
 
 ```bash
 bash scripts/openlaw grok-to-hermes <export-folder> <out-dir>
 ```
 
 See [examples/hermes.md](hermes.md). Keep `AGENTS.md` + `law/` in git as
-the source of truth. Routines, marketplace plugins, and learned
-memory/logs are not mapped.
+the source of truth. Snapshots and `secrets-redacted.md` are not skills.
+Routines, marketplace plugins, and session logs are not mapped.
 
 ## Optional MCP (account-wide HTTP)
 

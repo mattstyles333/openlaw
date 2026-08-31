@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Convert a Grok Bot create_bot_share_json dump into Hermes SOUL/skill excerpts.
+"""Convert a Grok Bot markdown export folder into Hermes SOUL/skill excerpts.
 
-Always-on law in git markdown. Not MEMORY.md. Not search. Not a memory product.
-Does not write law/, AGENTS.md, MEMORY.md, or memories/.
+Input is a folder of markdown (SOUL.md or instructions.md, plus skills).
+Not a JSON dump. Always-on law in git markdown. Not MEMORY.md.
+Does not write law/, AGENTS.md, MEMORY.md, memories/, or the repo root.
 """
 
 from __future__ import annotations
 
 import json
 import re
-import subprocess
+import shutil
 import sys
 from pathlib import Path
 
@@ -18,6 +19,21 @@ SECRET_LINE = re.compile(
     re.I,
 )
 SLUG_KEEP = re.compile(r"[^a-z0-9]+")
+IDENTITY_NAMES = {"soul.md", "instructions.md"}
+SKIP_ROOT_MD = IDENTITY_NAMES | {
+    "readme.md",
+    "memory.md",
+    "routines.md",
+    "plugins.md",
+}
+UNMAPPED_DIRS = {
+    "memories",
+    "memory",
+    "routines",
+    "cron",
+    "plugins",
+    "sessions",
+}
 
 
 def fail(msg: str) -> None:
@@ -25,28 +41,37 @@ def fail(msg: str) -> None:
     raise SystemExit(1)
 
 
+def note(msg: str) -> None:
+    print(f"note: {msg}", file=sys.stderr)
+
+
+def warn(msg: str) -> None:
+    print(f"warn: {msg}", file=sys.stderr)
+
+
 def find_root() -> Path:
     here = Path(__file__).resolve().parent.parent
     if (here / "AGENTS.md").is_file() and (here / "law").is_dir():
         return here
-    raise SystemExit("FAIL: cannot find Openlaw repo root (need AGENTS.md + law/)")
+    fail("cannot find Openlaw repo root (need AGENTS.md + law/)")
+    raise AssertionError
 
 
 def usage() -> None:
     print(
-        "Usage: bash scripts/openlaw grok-to-hermes <share.json> [out-dir]\n"
+        "Usage: bash scripts/openlaw grok-to-hermes <export-folder> <out-dir>\n"
         "\n"
-        "Reads a Grok Bot create_bot_share_json dump. Writes Hermes SOUL.md\n"
-        "plus skills/<slug>/SKILL.md excerpts. Does not write MEMORY.md,\n"
-        "memories/, law/, or AGENTS.md. Out-dir omitted → stdout.\n"
-        "share.json may be - for stdin.",
+        "Reads a Grok Bot markdown export folder (SOUL.md or instructions.md,\n"
+        "plus skills/ or flat *.md). Writes Hermes SOUL.md and\n"
+        "skills/<slug>/SKILL.md with YAML frontmatter. Does not write\n"
+        "MEMORY.md, memories/, law/, AGENTS.md, or the repo root.\n"
+        "Routines, marketplace plugins, and learned memory/logs are not mapped.",
         file=sys.stderr,
     )
 
 
 def slugify(name: str) -> str:
-    slug = SLUG_KEEP.sub("-", name.strip().lower()).strip("-")
-    return slug or "skill"
+    return SLUG_KEEP.sub("-", name.strip().lower()).strip("-")
 
 
 def strip_frontmatter(text: str) -> str:
@@ -71,25 +96,30 @@ def scrub(text: str) -> str:
     return "\n".join(lines).strip()
 
 
-def load_dump(path: str) -> dict:
-    if path == "-":
-        raw = sys.stdin.read()
-    else:
-        p = Path(path)
-        if not p.is_file():
-            fail(f"missing share dump: {path}")
-        raw = p.read_text(encoding="utf-8")
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        fail(f"invalid JSON: {exc}")
-    if not isinstance(data, dict):
-        fail("share dump must be a JSON object (create_bot_share_json payload)")
-    return data
+def one_liner(text: str) -> str:
+    for line in text.splitlines():
+        s = line.strip().lstrip("#").strip()
+        if s:
+            return s.replace('"', "'")[:120]
+    return "Openlaw skill excerpt"
+
+
+def heading_name(text: str, fallback: str) -> str:
+    for line in text.splitlines():
+        s = line.strip()
+        if s.startswith("#"):
+            title = s.lstrip("#").strip()
+            if title:
+                return title
+        elif s:
+            break
+    return fallback
 
 
 def excerpt_soul(root: Path) -> str:
     script = root / "scripts" / "excerpt-soul.sh"
+    import subprocess
+
     proc = subprocess.run(
         ["bash", str(script)],
         cwd=root,
@@ -100,36 +130,156 @@ def excerpt_soul(root: Path) -> str:
     return proc.stdout.strip()
 
 
-def build_soul(root: Path, dump: dict) -> str:
-    profile = dump.get("profile")
-    if not isinstance(profile, dict):
-        fail("missing profile object")
-    name = str(profile.get("name") or "").strip()
-    if not name:
-        fail("profile.name is required")
-    title = str(profile.get("title") or "").strip()
-    description = str(profile.get("description") or "").strip()
-    parts = [f"# {name}", ""]
-    if title:
-        parts.extend([title, ""])
-    if description:
-        parts.extend([description, ""])
+def read_md(path: Path) -> str:
+    return scrub(path.read_text(encoding="utf-8"))
+
+
+def collect_export(export: Path) -> tuple[str, list[tuple[str, str, str, str]], list[dict]]:
+    """Return (identity_markdown, skills, memory_items).
+
+    skills entries: (origin_label, slug_source, description, body)
+    """
+    identity = ""
+    identity_used = ""
+    skills: list[tuple[str, str, str, str]] = []
+    memory_items: list[dict] = []
+
+    if (export / "SOUL.md").is_file():
+        identity = read_md(export / "SOUL.md")
+        identity_used = "SOUL.md"
+    if (export / "instructions.md").is_file():
+        if identity_used:
+            note("ignoring instructions.md (SOUL.md already used for identity)")
+        else:
+            identity = read_md(export / "instructions.md")
+            identity_used = "instructions.md"
+    if not identity_used:
+        fail("export folder needs SOUL.md or instructions.md")
+
+    sidecar = export / "memory.json"
+    if sidecar.is_file():
+        try:
+            raw = json.loads(sidecar.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            fail(f"memory.json is not valid JSON: {exc}")
+        if not isinstance(raw, list):
+            note("ignoring memory.json (not a list of memory items)")
+        else:
+            memory_items = [item for item in raw if isinstance(item, dict)]
+            skipped = len(raw) - len(memory_items)
+            if skipped:
+                note(f"ignoring {skipped} non-object memory.json item(s)")
+
+    skills_dir = export / "skills"
+    if skills_dir.is_dir():
+        for path in sorted(skills_dir.iterdir()):
+            if path.name.startswith("."):
+                continue
+            if path.is_dir():
+                skill_md = path / "SKILL.md"
+                if skill_md.is_file():
+                    skills.append(_skill_from_file(skill_md, path.name, f"skills/{path.name}/SKILL.md"))
+                else:
+                    note(f"ignoring skills/{path.name}/ (no SKILL.md)")
+                continue
+            if path.suffix.lower() == ".md":
+                skills.append(_skill_from_file(path, path.stem, f"skills/{path.name}"))
+            else:
+                note(f"ignoring skills/{path.name} (not markdown)")
+
+    for path in sorted(export.iterdir()):
+        if path.name.startswith("."):
+            continue
+        if path.is_dir():
+            key = path.name.lower()
+            if key == "skills":
+                continue
+            if key in UNMAPPED_DIRS:
+                note(f"ignoring {path.name}/ (not mapped)")
+            else:
+                note(f"ignoring {path.name}/ (unknown directory)")
+            continue
+        lower = path.name.lower()
+        if lower in IDENTITY_NAMES:
+            continue
+        if lower == "memory.json":
+            continue
+        if lower in {"memory.md", "routines.md", "plugins.md"}:
+            note(f"ignoring {path.name} (not mapped)")
+            continue
+        if lower == "readme.md":
+            note(f"ignoring {path.name} (not mapped)")
+            continue
+        if path.suffix.lower() == ".md":
+            skills.append(_skill_from_file(path, path.stem, path.name))
+            continue
+        note(f"ignoring {path.name} (unknown artifact)")
+
+    return identity, skills, memory_items
+
+
+def _skill_from_file(path: Path, slug_source: str, origin: str) -> tuple[str, str, str, str]:
+    body = read_md(path)
+    if not body:
+        fail(f"empty skill markdown: {origin}")
+    name = heading_name(body, slug_source)
+    desc = one_liner(body)
+    return origin, name, desc, body
+
+
+def resolve_slugs(
+    skills: list[tuple[str, str, str, str]],
+) -> list[tuple[str, str, str]]:
+    """Return (slug, description, body). Fail on empty slug or collision."""
+    grouped: dict[str, list[tuple[str, str, str, str]]] = {}
+    for origin, name, desc, body in skills:
+        slug = slugify(name)
+        if not slug:
+            fail(f"all-punctuation name cannot slugify: {origin}")
+        grouped.setdefault(slug, []).append((origin, name, desc, body))
+    collisions = {slug: items for slug, items in grouped.items() if len(items) > 1}
+    if collisions:
+        parts = []
+        for slug, items in collisions.items():
+            names = ", ".join(f"{origin} ({name})" for origin, name, _, _ in items)
+            parts.append(f"{slug!r}: {names}")
+        fail("slug collision " + "; ".join(parts))
+    out: list[tuple[str, str, str]] = []
+    for slug, items in grouped.items():
+        _origin, _name, desc, body = items[0]
+        out.append((slug, desc, body))
+    return out
+
+
+def durable_conventions(memory_items: list[dict]) -> list[str]:
+    folded: list[str] = []
+    for item in memory_items:
+        kind = item.get("kind")
+        content = item.get("content")
+        if kind == "profile" and isinstance(content, str) and content.strip():
+            folded.append(scrub(content))
+            continue
+        if kind != "profile":
+            shown = kind if kind is not None else "no-kind"
+            note(f"ignoring memory item kind={shown!r} (not profile)")
+        elif not isinstance(content, str):
+            note("ignoring memory item with non-string content")
+        else:
+            note("ignoring empty profile memory item")
+    return [line for line in folded if line]
+
+
+def build_soul(
+    root: Path, identity: str, conventions: list[str]
+) -> str:
+    parts = []
+    if identity:
+        parts.append(identity)
+        parts.append("")
     parts.append(excerpt_soul(root))
-    durable: list[str] = []
-    memory = dump.get("memory") or []
-    if isinstance(memory, list):
-        for item in memory:
-            if not isinstance(item, dict):
-                continue
-            kind = str(item.get("kind") or "profile").strip().lower()
-            content = scrub(str(item.get("content") or ""))
-            if kind == "log" or not content:
-                continue
-            if kind == "profile":
-                durable.append(content)
-    if durable:
+    if conventions:
         parts.extend(["", "## Durable conventions", ""])
-        for line in durable:
+        for line in conventions:
             parts.append(f"- {line}")
     parts.append("")
     parts.append(
@@ -138,115 +288,104 @@ def build_soul(root: Path, dump: dict) -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
-def build_skills(dump: dict) -> list[tuple[str, str]]:
-    skills = dump.get("skills") or []
-    if not isinstance(skills, list):
-        fail("skills must be an array")
-    out: list[tuple[str, str]] = []
-    for item in skills:
-        if not isinstance(item, dict):
-            fail("skills[] items must be objects")
-        name = str(item.get("name") or "").strip()
-        if not name:
-            fail("skills[].name is required")
-        desc = str(item.get("description") or "").strip()
-        content = scrub(str(item.get("content") or ""))
-        if not content:
-            fail(f"skills[].content is required for {name}")
-        body_lines = [f"# {name}", ""]
-        if desc:
-            body_lines.extend([desc, ""])
-        body_lines.append(content)
-        out.append((slugify(name), "\n".join(body_lines).rstrip() + "\n"))
-    return out
+def skill_file(slug: str, description: str, body: str) -> str:
+    desc = description.strip() or "Openlaw skill excerpt"
+    return (
+        f"---\nname: {slug}\ndescription: {desc}\n---\n\n{body.rstrip()}\n"
+    )
 
 
 def refuse_out_dir(root: Path, out: Path) -> None:
+    if out.exists() and out.is_file():
+        fail(f"out-dir is an existing file, not a directory: {out}")
     target = out.resolve()
+    repo = root.resolve()
     law = (root / "law").resolve()
     agents = (root / "AGENTS.md").resolve()
     if target == agents:
         fail("refusing to write AGENTS.md")
+    if target == repo:
+        fail("refusing to write to the repository root")
     if target == law or law in target.parents or target.name == "law":
         fail("refusing to write under law/")
     if target.name in {"MEMORY.md", "memories"}:
         fail("refusing to write MEMORY.md / memories/ (recall is not law)")
     if "memories" in target.parts:
         fail("refusing to write under memories/")
+    if "law" in target.parts and (repo / "law").resolve() in target.parents:
+        fail("refusing to write under law/")
 
 
-def note_ignored(dump: dict) -> None:
-    if dump.get("routines"):
-        print("note: ignoring routines[] (not mapped this slice)", file=sys.stderr)
-    if dump.get("plugins"):
-        print("note: ignoring plugins[] (not mapped this slice)", file=sys.stderr)
-    if "visibility" in dump:
-        print("note: ignoring visibility (not mapped this slice)", file=sys.stderr)
-    profile = dump.get("profile")
-    if isinstance(profile, dict):
-        for key in ("avatarColor", "avatarShape"):
-            if key in profile:
-                print(f"note: ignoring profile.{key}", file=sys.stderr)
+def prune_stale_skills(out: Path, keep: set[str]) -> None:
+    skills_root = out / "skills"
+    if not skills_root.is_dir():
+        return
+    existing = [p for p in skills_root.iterdir() if p.is_dir() and not p.name.startswith(".")]
+    if existing:
+        warn("out-dir already has skills/; pruning stale slugs")
+    for path in existing:
+        if path.name not in keep:
+            shutil.rmtree(path)
+            warn(f"pruned out/skills/{path.name}/")
 
 
-def write_tree(out: Path, soul: str, skills: list[tuple[str, str]]) -> list[str]:
+def write_tree(out: Path, soul: str, skills: list[tuple[str, str, str]]) -> list[str]:
+    keep = {slug for slug, _, _ in skills}
+    if out.exists() and not out.is_dir():
+        fail(f"out-dir is an existing file, not a directory: {out}")
     out.mkdir(parents=True, exist_ok=True)
+    prune_stale_skills(out, keep)
     wrote: list[str] = []
     soul_path = out / "SOUL.md"
-    if soul_path.name == "MEMORY.md":
-        fail("refusing to write MEMORY.md")
     soul_path.write_text(soul, encoding="utf-8")
     wrote.append(str(soul_path))
-    for slug, body in skills:
+    for slug, desc, body in skills:
         skill_dir = out / "skills" / slug
         skill_dir.mkdir(parents=True, exist_ok=True)
         path = skill_dir / "SKILL.md"
-        path.write_text(body, encoding="utf-8")
+        path.write_text(skill_file(slug, desc, body), encoding="utf-8")
         wrote.append(str(path))
     return wrote
-
-
-def print_stdout(soul: str, skills: list[tuple[str, str]]) -> None:
-    chunks = [f"<!-- SOUL.md -->\n{soul.rstrip()}\n"]
-    for slug, body in skills:
-        chunks.append(f"<!-- skills/{slug}/SKILL.md -->\n{body.rstrip()}\n")
-    sys.stdout.write("\n---\n\n".join(chunks))
-    if not chunks[-1].endswith("\n"):
-        sys.stdout.write("\n")
 
 
 def main(argv: list[str]) -> int:
     if not argv or argv[0] in {"-h", "--help", "help"}:
         usage()
         return 0 if argv and argv[0] in {"-h", "--help", "help"} else 1
-    dump_path = argv[0]
-    out_arg = argv[1] if len(argv) > 1 else None
-    if len(argv) > 2:
-        fail("too many arguments")
+    if len(argv) != 2:
+        usage()
+        fail("need <export-folder> <out-dir>")
+    export = Path(argv[0])
+    out = Path(argv[1])
+    if not export.exists():
+        fail(f"missing export folder: {export}")
+    if not export.is_dir():
+        fail(f"input must be a markdown export folder, not a file: {export}")
     root = find_root()
-    dump = load_dump(dump_path)
-    soul = build_soul(root, dump)
-    skills = build_skills(dump)
-    note_ignored(dump)
-    if out_arg:
-        out = Path(out_arg)
-        refuse_out_dir(root, out)
-        wrote = write_tree(out, soul, skills)
-        print(f"Openlaw grok-to-hermes: {root}")
-        for path in wrote:
-            try:
-                rel = Path(path).resolve().relative_to(root)
-            except ValueError:
-                rel = Path(path)
-            print(f"Wrote {rel}")
-        print("Do not paste this into MEMORY.md. Retrieval is not law.")
-        return 0
-    print_stdout(soul, skills)
+    refuse_out_dir(root, out)
+    identity, raw_skills, memory_items = collect_export(export)
+    skills = resolve_slugs(raw_skills)
+    conventions = durable_conventions(memory_items)
+    soul = build_soul(root, identity, conventions)
+    wrote = write_tree(out, soul, skills)
+    print(f"Openlaw grok-to-hermes: {root}")
+    for path in wrote:
+        try:
+            rel = Path(path).resolve().relative_to(root)
+        except ValueError:
+            rel = Path(path)
+        print(f"Wrote {rel}")
+    print("Do not paste this into MEMORY.md. Retrieval is not law.")
     return 0
 
 
 if __name__ == "__main__":
     try:
         raise SystemExit(main(sys.argv[1:]))
+    except SystemExit:
+        raise
     except BrokenPipeError:
         raise SystemExit(0)
+    except Exception as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        raise SystemExit(1)

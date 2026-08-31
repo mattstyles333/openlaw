@@ -16,23 +16,31 @@ The excerpt is the three hard rules plus "retrieval is not law". It
 is not a substitute for cloning the repo. Hermes should still have
 the working tree (or HTTP MCP) so it can read `law/`.
 
-## Grok Bot share dump → Hermes excerpts
+## Grok Bot markdown export → Hermes excerpts
 
-If you have a Grok Bot `create_bot_share_json` dump, convert it to a
-short `SOUL.md` plus skill excerpts. That is git-markdown law, not
-`MEMORY.md`.
+Grok Bot export is a **folder of markdown**, not a JSON dump. Convert
+it to Hermes-loadable `SOUL.md` plus `skills/<slug>/SKILL.md` (YAML
+frontmatter). That is git-markdown law, not `MEMORY.md`.
 
 ```bash
-bash scripts/openlaw grok-to-hermes examples/fixtures/grok-bot-share.json /tmp/hermes-excerpts
-# Paste /tmp/hermes-excerpts/SOUL.md into Hermes SOUL.md.
-# Copy skills/<slug>/SKILL.md next to the Hermes profile if you want those skills.
-# Leave memory.provider unset. Do not copy the dump into MEMORY.md.
+bash scripts/openlaw grok-to-hermes <export-folder> <out-dir>
 ```
 
-`kind: profile` memory lines may fold into SOUL as durable conventions.
-`kind: log` lines are dropped. Routines and marketplace plugins are not
-mapped on this slice. The converter refuses to write `law/`, `AGENTS.md`,
-`MEMORY.md`, or `memories/`.
+Example:
+
+```bash
+bash scripts/openlaw grok-to-hermes examples/fixtures/grok-bot-export out-dir
+# Paste out-dir/SOUL.md into Hermes SOUL.md.
+# Copy out-dir/skills/<slug>/SKILL.md into the Hermes profile skills.
+# Leave memory.provider unset. Do not copy anything into MEMORY.md.
+```
+
+What maps: `SOUL.md` or `instructions.md` → identity in `SOUL.md`;
+skill markdown (under `skills/` or flat `*.md` with a heading) →
+`SKILL.md` with `name` / `description` frontmatter. What does **not**
+map: routines, marketplace plugins, learned memory/logs (stderr notes).
+The converter refuses `law/`, the repo root, `AGENTS.md`, `MEMORY.md`,
+and `memories/`.
 
 ## Memory is not law
 

@@ -66,6 +66,8 @@ def test_openlaw_help_and_unknown() -> None:
         "grok-to-hermes",
     ):
         assert name in help_.stdout
+    assert "export-folder" in help_.stdout
+    assert "share.json" not in help_.stdout
     default = _run([])
     assert default.returncode == 0
     assert "Usage:" in default.stdout

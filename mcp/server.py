@@ -1,7 +1,9 @@
 """Openlaw MCP — thin HTTP projection of git. Not the source of truth.
 
-Git markdown (law/, decisions/) is canonical. This process only reads and
-writes those files. It does not search, embed, or replace AGENTS.md.
+Git markdown (law/, decisions/) is canonical. Skills tools wrap
+`scripts/openlaw` (law, priorities, permissions, check, decisions, propose)
+and return that CLI's stdout. This process does not search, embed, or
+replace AGENTS.md.
 
 Auth (fail closed):
   - OPENLAW_MCP_TOKEN is required at startup; refuse to listen if unset.
@@ -25,8 +27,8 @@ import hmac
 import json
 import os
 import re
+import subprocess
 import sys
-from datetime import date
 from pathlib import Path
 from typing import Any, Callable
 
@@ -187,22 +189,55 @@ def require_owner(request: Request) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Tools
+# Skills CLI wrap: bash scripts/openlaw <command> from the repo root.
 # ---------------------------------------------------------------------------
+
+def run_openlaw(*cli_args: str) -> str:
+    """Invoke the shipped skills CLI. Return stdout. Do not reimplement it."""
+    root = find_repo_root()
+    cli = root / "scripts" / "openlaw"
+    proc = subprocess.run(
+        ["bash", str(cli), *cli_args],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    if proc.returncode != 0:
+        err = (proc.stderr or "").strip()
+        out = (proc.stdout or "").strip()
+        raise RuntimeError(
+            err or out or f"scripts/openlaw {' '.join(cli_args)} failed ({proc.returncode})"
+        )
+    return proc.stdout
+
 
 def tool_get_law(_args: dict[str, Any], _request: Request) -> str:
     """Full current constraints+brand+sor concatenated. NOT search."""
-    root = find_repo_root()
-    parts: list[str] = []
-    for name in ("constraints.md", "brand.md", "sor.md"):
-        path = root / "law" / name
-        parts.append(f"<!-- law/{name} -->\n{_read(path).rstrip()}\n")
-    return "\n---\n\n".join(parts)
+    return run_openlaw("law")
 
 
 def tool_get_priorities(_args: dict[str, Any], _request: Request) -> str:
-    root = find_repo_root()
-    return _read(root / "law" / "priorities.md")
+    return run_openlaw("priorities")
+
+
+def tool_permissions(_args: dict[str, Any], _request: Request) -> str:
+    return run_openlaw("permissions")
+
+
+def tool_check(_args: dict[str, Any], _request: Request) -> str:
+    return run_openlaw("check")
+
+
+def tool_decisions(_args: dict[str, Any], _request: Request) -> str:
+    return run_openlaw("decisions")
+
+
+def tool_propose(args: dict[str, Any], _request: Request) -> str:
+    slug = str(args.get("slug") or "").strip()
+    if slug:
+        return run_openlaw("propose", slug)
+    return run_openlaw("propose")
 
 
 def tool_search_decisions(args: dict[str, Any], _request: Request) -> str:
@@ -249,47 +284,6 @@ def tool_get_decision(args: dict[str, Any], _request: Request) -> str:
     return _read(path)
 
 
-def _slugify(slug: str) -> str:
-    cleaned = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
-    if not cleaned:
-        raise ValueError("propose_decision: slug is empty after sanitizing")
-    return cleaned
-
-
-def tool_propose_decision(args: dict[str, Any], _request: Request) -> str:
-    slug = _slugify(str(args.get("slug") or ""))
-    title = str(args.get("title") or slug.replace("-", " ")).strip()
-    owner = str(args.get("owner") or "specialist").strip() or "specialist"
-    supersedes = str(args.get("supersedes") or "").strip()
-    context = str(args.get("context") or "").strip() or "(none given)"
-    decision = str(args.get("decision") or "").strip() or "(none given)"
-    consequences = str(args.get("consequences") or "").strip() or "(none given)"
-    today = str(args.get("date") or date.today().isoformat())
-    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", today):
-        raise ValueError("propose_decision: date must be YYYY-MM-DD")
-    filename = f"{today}-{slug}.md"
-    path = _decision_path(filename)
-    if path.exists():
-        raise ValueError(f"propose_decision: {filename} already exists")
-    body = (
-        "---\n"
-        f"date: {today}\n"
-        f"owner: {owner}\n"
-        "status: proposed\n"
-        f"supersedes: {supersedes}\n"
-        "---\n\n"
-        f"# {title}\n\n"
-        "## Context\n\n"
-        f"{context}\n\n"
-        "## Decision\n\n"
-        f"{decision}\n\n"
-        "## Consequences\n\n"
-        f"{consequences}\n"
-    )
-    _write(path, body)
-    return f"proposed {filename} (status: proposed). Git is still the source of truth."
-
-
 def tool_commit_decision(args: dict[str, Any], request: Request) -> str:
     require_owner(request)
     filename = str(args.get("filename") or "").strip()
@@ -330,16 +324,57 @@ def tool_set_priorities(args: dict[str, Any], request: Request) -> str:
     return "rewrote law/priorities.md. Git is still the source of truth."
 
 
+_LAW_SCHEMA = {"type": "object", "properties": {}, "additionalProperties": False}
+_PROPOSE_SCHEMA = {
+    "type": "object",
+    "properties": {"slug": {"type": "string"}},
+}
+
 TOOLS: dict[str, tuple[str, dict[str, Any], Callable[[dict[str, Any], Request], str]]] = {
-    "get_law": (
-        "Return full current law/constraints.md + brand.md + sor.md concatenated. NOT search.",
-        {"type": "object", "properties": {}, "additionalProperties": False},
+    "law": (
+        "Wrap scripts/openlaw law: full constraints+brand+sor. NOT search.",
+        _LAW_SCHEMA,
         tool_get_law,
     ),
-    "get_priorities": (
-        "Return law/priorities.md (this week's list; rewrite, do not append forever).",
-        {"type": "object", "properties": {}, "additionalProperties": False},
+    "get_law": (
+        "Alias of law. Wrap scripts/openlaw law. NOT search.",
+        _LAW_SCHEMA,
+        tool_get_law,
+    ),
+    "priorities": (
+        "Wrap scripts/openlaw priorities: print law/priorities.md.",
+        _LAW_SCHEMA,
         tool_get_priorities,
+    ),
+    "get_priorities": (
+        "Alias of priorities. Wrap scripts/openlaw priorities.",
+        _LAW_SCHEMA,
+        tool_get_priorities,
+    ),
+    "permissions": (
+        "Wrap scripts/openlaw permissions: print law/permissions.md.",
+        _LAW_SCHEMA,
+        tool_permissions,
+    ),
+    "check": (
+        "Wrap scripts/openlaw check: run scripts/check-law.sh.",
+        _LAW_SCHEMA,
+        tool_check,
+    ),
+    "decisions": (
+        "Wrap scripts/openlaw decisions: print decisions/20*.md (not binding).",
+        _LAW_SCHEMA,
+        tool_decisions,
+    ),
+    "propose": (
+        "Wrap scripts/openlaw propose: copy decisions/_template.md. Does not write law/.",
+        _PROPOSE_SCHEMA,
+        tool_propose,
+    ),
+    "propose_decision": (
+        "Alias of propose. Wrap scripts/openlaw propose. Does not edit law/.",
+        _PROPOSE_SCHEMA,
+        tool_propose,
     ),
     "search_decisions": (
         "Keyword search over decisions/*.md (substring, case-insensitive).",
@@ -358,23 +393,6 @@ TOOLS: dict[str, tuple[str, dict[str, Any], Callable[[dict[str, Any], Request], 
             "required": ["filename"],
         },
         tool_get_decision,
-    ),
-    "propose_decision": (
-        "Insert decisions/YYYY-MM-DD-slug.md with status proposed. Does not edit law/.",
-        {
-            "type": "object",
-            "properties": {
-                "slug": {"type": "string"},
-                "title": {"type": "string"},
-                "owner": {"type": "string"},
-                "context": {"type": "string"},
-                "decision": {"type": "string"},
-                "consequences": {"type": "string"},
-                "supersedes": {"type": "string"},
-            },
-            "required": ["slug", "title"],
-        },
-        tool_propose_decision,
     ),
     "commit_decision": (
         "Owner-only. Requires CANON_COMMIT_TOKEN. Sets an ADR status to decided.",
@@ -421,7 +439,7 @@ def _tool_call_payload(name: str, args: dict[str, Any], request: Request) -> dic
         return {"content": [{"type": "text", "text": text}], "isError": False}
     except PermissionError as exc:
         return {"content": [{"type": "text", "text": str(exc)}], "isError": True}
-    except (KeyError, ValueError, FileNotFoundError, OSError) as exc:
+    except (KeyError, ValueError, FileNotFoundError, OSError, RuntimeError) as exc:
         return {"content": [{"type": "text", "text": str(exc)}], "isError": True}
 
 
@@ -518,6 +536,8 @@ async def handle_tool_http(request: Request) -> Response:
         return JSONResponse({"error": str(exc)}, status_code=404)
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
+    except RuntimeError as exc:
+        return PlainTextResponse(str(exc), status_code=400)
     return PlainTextResponse(text)
 
 

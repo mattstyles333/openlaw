@@ -79,13 +79,18 @@ README as real values, or as Compose default secrets.
 
 ## Tools
 
+Skills tools wrap `bash scripts/openlaw <command>` and return that CLI's stdout.
+
 | Tool | Who | What |
 | --- | --- | --- |
-| `get_law` | any bearer | `law/constraints.md` + `brand.md` + `sor.md`, concatenated. **Not search.** |
-| `get_priorities` | any bearer | `law/priorities.md` |
+| `law` / `get_law` | any bearer | wrap `openlaw law` — constraints+brand+sor. **Not search.** |
+| `priorities` / `get_priorities` | any bearer | wrap `openlaw priorities` |
+| `permissions` | any bearer | wrap `openlaw permissions` |
+| `check` | any bearer | wrap `openlaw check` |
+| `decisions` | any bearer | wrap `openlaw decisions` |
+| `propose` / `propose_decision` | any bearer | wrap `openlaw propose` (does not write `law/` or `AGENTS.md`) |
 | `search_decisions` | any bearer | keyword over `decisions/*.md` |
 | `get_decision` | any bearer | one ADR by filename |
-| `propose_decision` | any bearer | insert `decisions/YYYY-MM-DD-slug.md` with `status: proposed` |
 | `commit_decision` | owner | set that ADR `status: decided` |
 | `set_priorities` | owner | rewrite `law/priorities.md` |
 
